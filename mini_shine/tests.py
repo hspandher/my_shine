@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest, HttpResponse
+from django.template.loader import render_to_string
 from mini_shine.views import home
 
 
@@ -19,4 +20,7 @@ class HomePageTest(TestCase):
         response = home(request)
         self.assertIn('<title>Mini Shine</title>', response.content)
 
-
+    def test_home_view_renders_a_template(self):
+        response = home(HttpRequest())
+        expected_html = render_to_string('home.html')
+        self.assertEqual(response.content, expected_html)
