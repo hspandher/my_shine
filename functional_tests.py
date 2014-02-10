@@ -15,7 +15,7 @@ class NewVisitorTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000')
 
-        # She notices that the page has title Shine and a header with the same word
+        # She notices that the page has title Mini Shine and a header with the same word
         self.assertIn('Shine', self.browser.title)
 
         # She notices the 'Register Now!' button in the top right corner.
