@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
-from mini_shine.views import home
+from mini_shine.views import home, register
 
 
 class HomePageTest(TestCase):
@@ -34,5 +34,24 @@ class HomePageTest(TestCase):
         self.assertRegexpMatches(str(self.response.content), r'<a.*?/register/.*?>Register Now!</a>', 'Register Now link doesn\'t have right url')
 
 
+class RegisterPageTest(TestCase):
+
+    def setUp(self):
+        self.response = register(HttpRequest)
+
+    def test_register_url_points_to_view(self):
+        found = resolve('/register/')
+        self.assertEqual(found.func, register)
+
+    def test_register_view_return_http_response(self):
+        self.assertIsInstance(self.response, HttpResponse)
+
+    def test_register_view_uses_right_template(self):
+        expected_html = render_to_string('register.html')
+        self.assertEqual(expected_html, self.response.content)
+
+    def test_register_view_has_right_title_and_header(self):
+        self.assertIn('<title>Register</title>', self.response.content)
+        self.assertIn('<h1>Register</h1>', self.response.content)
 
 

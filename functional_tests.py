@@ -1,6 +1,8 @@
 import unittest
 from selenium import webdriver
 
+import time
+
 class NewVisitorTest(unittest.TestCase):
 
     def setUp(self):
@@ -38,10 +40,15 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.get('http://localhost:8000')
 
         # She clicks it, which redirects her to another page with a form.
-        self.find_tag_by_display_value('a', 'Register Now!').click
+        self.find_tag_by_display_value('a', 'Register Now!').click()
         self.assertIn('/register/', self.browser.current_url)
 
-        # The form requires her to fill Email, Password, Confirm Password, Mobile No.
+        # The form requires her to fill Email, Password, Confirm Password, Mobile Number
+        self.browser.find_element_by_css_selector("input[placeholder='Email']")
+        self.browser.find_element_by_css_selector("input[placeholder='Password']")
+        self.browser.find_element_by_css_selector("input[placeholder='Confirm Password']")
+        self.browser.find_element_by_css_selector("input[placeholder='Mobile Number']")
+
         # and checkbox for terms and conditions
 
         # She fills the form with:-
