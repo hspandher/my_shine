@@ -13,6 +13,13 @@ class NewVisitorTest(unittest.TestCase):
         elements = self.browser.find_elements_by_tag_name(tag_name)
         self.assertIn(name, [element.text for element in elements])
 
+    def find_tag_by_display_value(self, tag_name, display_value):
+        for element in self.browser.find_elements_by_tag_name(tag_name):
+            if display_value in element.text:
+                return element
+
+        raise AssertionError("No element having {tag_name} and {display_value}".format(tag_name = tag_name, display_value = display_value))
+
     def test_home_page_has_right_title_and_register_button(self):
         # Edith has heard about cool new mini-job portal. She goes to its homepage to
         # check it out
@@ -27,8 +34,12 @@ class NewVisitorTest(unittest.TestCase):
         self.assert_element_exists_by_name('Register Now!', 'a')
 
     def test_can_register_and_redirect_to_profile(self):
-        pass
+        # She goes to the home page
+        self.browser.get('http://localhost:8000')
+
         # She clicks it, which redirects her to another page with a form.
+        self.find_tag_by_display_value('a', 'Register Now!').click
+        self.assertIn('/register/', self.browser.current_url)
 
         # The form requires her to fill Email, Password, Confirm Password, Mobile No.
         # and checkbox for terms and conditions

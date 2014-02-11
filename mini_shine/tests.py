@@ -7,6 +7,9 @@ from mini_shine.views import home
 
 class HomePageTest(TestCase):
 
+    def setup(self):
+        self.response = home(HttpRequest())
+
     def test_root_url_resolves_to_home_page(self):
         found = resolve('/')
         self.assertEqual(found.func, home)
@@ -31,3 +34,7 @@ class HomePageTest(TestCase):
     def test_home_page_has_register_now_link(self):
         response = home(HttpRequest())
         self.assertRegexpMatches(str(response.content), r'<a.*>Register Now!</a>')
+
+    def test_register_now_link_has_right_url(self):
+        response = home(HttpRequest)
+
