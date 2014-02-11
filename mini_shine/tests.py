@@ -5,7 +5,6 @@ from django.template.loader import render_to_string
 from mini_shine.views import home, register
 from mini_shine.forms import RegistrationForm
 
-import sys
 
 class HomePageTest(TestCase):
 

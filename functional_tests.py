@@ -36,6 +36,11 @@ class NewVisitorTest(unittest.TestCase):
         mobile_number_field = self.browser.find_element_by_name('mobile_number')
         mobile_number_field.send_keys(details['mobile_number'])
 
+        if details['check_terms']:
+            terms_checkbox = self.browser.find_element_by_name('terms_and_conditions')
+            if not terms_checkbox.is_selected():
+                terms_checkbox.click()
+
         self.browser.find_element_by_css_selector('input[type="submit"]').click()
 
 
@@ -82,7 +87,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # She clicks the button 'Register'
 
-        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234'}
+        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'check_terms': True}
         self.fill_and_submit_registration_form(details)
 
         # She is redirected to a rather long form asking of lot of details.
