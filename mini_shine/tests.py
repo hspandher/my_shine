@@ -54,4 +54,19 @@ class RegisterPageTest(TestCase):
         self.assertIn('<title>Register</title>', self.response.content)
         self.assertIn('<h1>Register</h1>', self.response.content)
 
+    def test_register_view_has_form_tag(self):
+        self.assertRegexpMatches(r'<form.*?>.*?</form>', self.response.content, 'No Form Displayed on Register page')
+
+    def test_register_view_has_input_field_email(self):
+        self.assertRegexpMatches(r'<input.*?name="email".*?', self.response.content, 'No Email-field found on Register Page')
+
+    def test_register_view_has_input_field_password(self):
+        self.assertRegexpMatches(r'<input.*?name="password".*?', self.response.content, 'No Password-field found on Register Page')
+
+    def test_register_view_has_input_field_confirm_password(self):
+        self.assertRegexpMatches(r'<input.*?name="confirm_password".*?', self.response.content, 'No Confirm Password-field found on Register Page')
+
+    def test_register_view_has_input_field_mobile_no(self):
+        self.assertRegexpMatches(r'<input.*?name="mobile_number".*?', self.response.content, 'No Mobile number field found on register page')
+
 

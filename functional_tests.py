@@ -20,7 +20,7 @@ class NewVisitorTest(unittest.TestCase):
             if display_value in element.text:
                 return element
 
-        raise AssertionError("No element having {tag_name} and {display_value}".format(tag_name = tag_name, display_value = display_value))
+        raise AssertionError("No element having tag {tag_name} and value {display_value}".format(tag_name = tag_name, display_value = display_value))
 
     def test_home_page_has_right_title_and_register_button(self):
         # Edith has heard about cool new mini-job portal. She goes to its homepage to
