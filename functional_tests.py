@@ -23,6 +23,22 @@ class NewVisitorTest(unittest.TestCase):
 
         raise AssertionError("No element having tag {tag_name} and value {display_value}".format(tag_name = tag_name, display_value = display_value))
 
+    def fill_and_submit_registration_form(self, details):
+        email_field = self.browser.find_element_by_name('email')
+        email_field.send_keys(details['email'])
+
+        password_field = self.browser.find_element_by_name('password')
+        password_field.send_keys(details['password'])
+
+        confirm_password_field = self.browser.find_element_by_name('confirm_password')
+        confirm_password_field.send_keys(details['confirm_password'])
+
+        mobile_number_field = self.browser.find_element_by_name('mobile_number')
+        mobile_number_field.send_keys(details['mobile_number'])
+
+        self.browser.find_element_by_css_selector('input[type="submit"]').click()
+
+
     def test_home_page_has_right_title_and_register_button(self):
         # Edith has heard about cool new mini-job portal. She goes to its homepage to
         # check it out
@@ -55,25 +71,19 @@ class NewVisitorTest(unittest.TestCase):
 
         # She fills the form with:-
         # email:- 'edith432@gmail.com'
-        email_field = self.browser.find_element_by_name('email')
-        email_field.send_keys('edith432@gmail.com')
 
         # password:- 'edith3099'
-        password_field = self.browser.find_element_by_name('password')
-        password_field.send_keys('edith3099')
 
         # confirm_password:- 'edith3099'
-        confirm_password_field = self.browser.find_element_by_name('confirm_password')
-        confirm_password_field.send_keys('edith3099')
 
         # mobile_no:- '9934734234'
-        mobile_number_field = self.browser.find_element_by_name('mobile_number')
-        mobile_number_field.send_keys('9924723234')
 
+        # She agrees to terms and conditions
 
         # She clicks the button 'Register'
-        self.browser.find_element_by_css_selector('input[type="submit"]').click()
 
+        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234'}
+        self.fill_and_submit_registration_form(details)
 
         # She is redirected to a rather long form asking of lot of details.
 
