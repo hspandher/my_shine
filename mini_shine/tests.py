@@ -3,7 +3,9 @@ from django.core.urlresolvers import resolve
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 from mini_shine.views import home, register
+from mini_shine.forms import RegistrationForm
 
+import sys
 
 class HomePageTest(TestCase):
 
@@ -47,7 +49,8 @@ class RegisterPageTest(TestCase):
         self.assertIsInstance(self.response, HttpResponse)
 
     def test_register_view_uses_right_template(self):
-        expected_html = render_to_string('register.html')
+        form = RegistrationForm()
+        expected_html = render_to_string('register.html', { 'form': form })
         self.assertEqual(expected_html, self.response.content)
 
     def test_register_view_has_right_title_and_header(self):
@@ -55,18 +58,10 @@ class RegisterPageTest(TestCase):
         self.assertIn('<h1>Register</h1>', self.response.content)
 
     def test_register_view_has_form_tag(self):
-        self.assertRegexpMatches(r'<form.*?>.*?</form>', self.response.content, 'No Form Displayed on Register page')
+        self.assertIn('form', self.response.content)
 
-    def test_register_view_has_input_field_email(self):
-        self.assertRegexpMatches(r'<input.*?name="email".*?', self.response.content, 'No Email-field found on Register Page')
-
-    def test_register_view_has_input_field_password(self):
-        self.assertRegexpMatches(r'<input.*?name="password".*?', self.response.content, 'No Password-field found on Register Page')
-
-    def test_register_view_has_input_field_confirm_password(self):
-        self.assertRegexpMatches(r'<input.*?name="confirm_password".*?', self.response.content, 'No Confirm Password-field found on Register Page')
-
-    def test_register_view_has_input_field_mobile_no(self):
-        self.assertRegexpMatches(r'<input.*?name="mobile_number".*?', self.response.content, 'No Mobile number field found on register page')
-
+    def test_register_view_has_correct_form_fields(self):
+        input_fields_names = ['email', 'password', 'confirm_password', 'mobile_number']
+        for field_name in input_fields_names:
+            self.assertIn(field_name, self.response.content)
 

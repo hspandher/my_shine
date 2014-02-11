@@ -1,5 +1,6 @@
 import unittest
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 import time
 
@@ -50,14 +51,29 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.find_element_by_css_selector("input[placeholder='Mobile Number']")
 
         # and checkbox for terms and conditions
+        self.browser.find_element_by_css_selector('input[type="checkbox"][name="terms_and_conditions"]')
 
         # She fills the form with:-
-        # email:- 'edith43_2@gmail.com'
-        # password:- 'edith3099'
-        # confirm_password:- 'edith3099'
-        # mobile_no:- '9934734234'
+        # email:- 'edith432@gmail.com'
+        email_field = self.browser.find_element_by_name('email')
+        email_field.send_keys('edith432@gmail.com')
 
-        # She clicks the button 'Sign up'
+        # password:- 'edith3099'
+        password_field = self.browser.find_element_by_name('password')
+        password_field.send_keys('edith3099')
+
+        # confirm_password:- 'edith3099'
+        confirm_password_field = self.browser.find_element_by_name('confirm_password')
+        confirm_password_field.send_keys('edith3099')
+
+        # mobile_no:- '9934734234'
+        mobile_number_field = self.browser.find_element_by_name('mobile_number')
+        mobile_number_field.send_keys('9924723234')
+
+
+        # She clicks the button 'Register'
+        self.browser.find_element_by_css_selector('input[type="submit"]').click()
+
 
         # She is redirected to a rather long form asking of lot of details.
 
