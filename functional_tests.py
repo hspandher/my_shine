@@ -35,21 +35,26 @@ class NewVisitorTest(unittest.TestCase):
                 if not checkbox.is_selected():
                     checkbox.click()
 
-    def fill_and_submit_registration_form(self, details):
+    def check_radio_button(self, button_name, button_value):
+        self.browser.find_element_by_css_selector("input[type='radio'][value='{value}']".format(value = button_value)).click()
+
+
+    def fill_and_submit_form(self, details):
         input_fields_details = {}
+        checkbox_details = {}
         for field_name in details:
             if type(details[field_name]) == str:
-                input_fields_details[field_name] = details[field_name]
+                if field_name == 'radio':
+                    self.check_radio_button(field_name, details[field_name])
+                else:
+                    input_fields_details[field_name] = details[field_name]
+            if type(details[field_name]) == bool:
+                checkbox_details[field_name] = details[field_name]
 
         self.fill_input_text_field(input_fields_details)
-
-        if details['check_terms']:
-            terms_checkbox = self.browser.find_element_by_name('terms_and_conditions')
-            if not terms_checkbox.is_selected():
-                terms_checkbox.click()
+        self.check_checkboxes(checkbox_details)
 
         self.browser.find_element_by_css_selector('input[type="submit"]').click()
-
 
     def test_home_page_has_right_title_and_register_button(self):
         # Edith has heard about cool new mini-job portal. She goes to its homepage to
@@ -94,8 +99,8 @@ class NewVisitorTest(unittest.TestCase):
 
         # She clicks the button 'Register'
 
-        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'check_terms': True}
-        self.fill_and_submit_registration_form(details)
+        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True}
+        self.fill_and_submit_form(details)
 
         # She is redirected to a rather long form asking of lot of details.
         self.assertIn('/profile/add/personal-details/', self.browser.current_url)
