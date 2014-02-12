@@ -23,6 +23,10 @@ class NewVisitorTest(unittest.TestCase):
 
         raise AssertionError("No element having tag {tag_name} and value {display_value}".format(tag_name = tag_name, display_value = display_value))
 
+    # def fill_input_text_field(self, field_names):
+    #     for field_name in field_names:
+    #         input_field = self.b
+
     def fill_and_submit_registration_form(self, details):
         email_field = self.browser.find_element_by_name('email')
         email_field.send_keys(details['email'])
@@ -90,9 +94,8 @@ class NewVisitorTest(unittest.TestCase):
         details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'check_terms': True}
         self.fill_and_submit_registration_form(details)
 
-        time.sleep(5)
-
         # She is redirected to a rather long form asking of lot of details.
+        self.assertIn('/profile/add/personal-details/', self.browser.current_url)
 
         # Personal Details :-
         # Name - first_name, last_name
@@ -117,6 +120,8 @@ class NewVisitorTest(unittest.TestCase):
         # credentials
 
         # She is satisfied and quit the browser
+
+
 
 
 
