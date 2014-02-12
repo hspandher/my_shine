@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
+from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
 from mini_shine.views import home, register
 from mini_shine.forms import RegistrationForm
@@ -20,20 +21,20 @@ class HomePageTest(TestCase):
         self.assertIsInstance(self.response, HttpResponse)
 
     def test_home_view_renders_a_template(self):
-        expected_html = render_to_string('home.html')
-        self.assertEqual(self.response.content, expected_html)
+        expected_response = render_to_response('home.html')
+        self.assertEqual(self.response.content, expected_response.content)
 
     def test_home_page_has_right_title(self):
         self.assertIn('<title>Mini Shine</title>', self.response.content)
 
     def test_home_page_has_right_header(self):
-        self.assertIn('<h1>Mini Shine</h1>', self.response.content)
+        self.assertIn('<h1>Welcome to Mini Shine!</h1>', self.response.content)
 
     def test_home_page_has_register_now_link(self):
-        self.assertRegexpMatches(str(self.response.content), r'<a.*>Register Now!</a>')
+        self.assertRegexpMatches(str(self.response.content), r'<a(.|\n)*Register Now!(.|\n)*<\/a>')
 
     def test_register_now_link_has_right_url(self):
-        self.assertRegexpMatches(str(self.response.content), r'<a.*?/register/.*?>Register Now!</a>', 'Register Now link doesn\'t have right url')
+        self.assertRegexpMatches(self.response.content, r'<a(.|\n)*?\/register\/(.|\n)*?>(.|\n)*?Register Now!(.|\n)*?<\/a>', 'Register Now link doesn\'t have right url')
 
 
 class RegisterPageTest(TestCase):
@@ -46,11 +47,17 @@ class RegisterPageTest(TestCase):
         request = factory.post(link, form_details)
         return register(request), RegistrationForm(request.POST)
 
+    # def check_registration_validation(self, form_details):
+    #     link = '/register/'
+    #     response, form = self.submit_post_form_to_view(link, form_details)
+    #     expected_response = render_to_string('register.html', {'form': form})
+    #     self.assertEqual(expected_response, response.content)
+
     def check_registration_validation(self, form_details):
         link = '/register/'
         response, form = self.submit_post_form_to_view(link, form_details)
-        expected_html = render_to_string('register.html', {'form': form})
-        self.assertEqual(expected_html, response.content)
+        expected_response = render_to_response('register.html', {'form': form})
+        self.assertEqual(expected_response.content, response.content)
 
     def test_register_url_points_to_view(self):
         found = resolve('/register/')
@@ -61,8 +68,8 @@ class RegisterPageTest(TestCase):
 
     def test_register_view_uses_right_template(self):
         form = RegistrationForm()
-        expected_html = render_to_string('register.html', { 'form': form })
-        self.assertEqual(expected_html, self.response.content)
+        expected_response = render_to_response('register.html', { 'form': form })
+        self.assertEqual(expected_response.content, self.response.content)
 
     def test_register_view_has_right_title_and_header(self):
         self.assertIn('<title>Register</title>', self.response.content)

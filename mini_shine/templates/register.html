@@ -1,10 +1,8 @@
-<html>
-    <head>
-        <title>Register</title>
-    </head>
+{% extends 'base.html' %}
 
-    <body>
-        <h1>Register</h1>
-        {% include 'includes/registration_form.html' %}
-    </body>
-</html>
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <h1>Register</h1>
+    {% include 'includes/registration_form.html' %}
+{% endblock %}

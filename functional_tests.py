@@ -64,7 +64,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # She notices that the page has title Mini Shine and a header with the same word
         self.assertIn('Mini Shine', self.browser.title)
-        self.assertIn('Mini Shine', [element.text for element in self.browser.find_elements_by_tag_name('h1')])
+        self.assertIn('Welcome to Mini Shine!', [element.text for element in self.browser.find_elements_by_tag_name('h1')])
 
         # She notices the 'Register Now!' button in the top right corner.
         self.assert_element_exists_by_name('Register Now!', 'a')

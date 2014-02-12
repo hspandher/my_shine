@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content='IE=edge'>
+        <meta name='viewport' content='width=device-width' media='screen'>
+        <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css" media='screen'>
+        <link rel="stylesheet" href="/static/bootstrap/css/jumbotron.css" media='screen'>
+
+        <title>{% block title %}Mini Shine{% endblock %}</title>
+    </head>
+    <body>
+
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">Mini Shine</a>
+            </div>
+
+            <div class="navbar-collapse collapse">
+              <form class="navbar-form navbar-right" role="form">
+                <div class="form-group">
+                  <input placeholder="Email" class="form-control" type="text">
+                </div>
+                <div class="form-group">
+                  <input placeholder="Password" class="form-control" type="password">
+                </div>
+                <button type="submit" class="btn btn-success">Sign in</button>
+              </form>
+            </div><!--/.navbar-collapse -->
+          </div>
+        </div>
+
+        {% block body %}
+            <div class="jumbotron">
+              <div class="container">
+                <h1>Welcome to Mini Shine!</h1>
+                <p>Mini Shine is one of the largest job portal in the country. Join right now to get your Dream Job</p>
+                <p>
+                    <a href='/register/' class="btn btn-primary btn-lg" role="button">
+                        Register Now!
+                    </a>
+                </p>
+              </div>
+            </div>
+
+
+            <div class="container">
+              <!-- Example row of columns -->
+              <div class="row">
+                <div class="col-md-4">
+                  <h2>Heading</h2>
+                  <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                  <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+                </div>
+                <div class="col-md-4">
+                  <h2>Heading</h2>
+                  <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                  <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+               </div>
+                <div class="col-md-4">
+                  <h2>Heading</h2>
+                  <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                  <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+                </div>
+              </div>
+
+          {% endblock %}
+
+          <hr>
+
+          <footer>
+            <p>© Mini Shine. All Rights Reserved</p>
+          </footer>
+        </div> <!-- /container -->
+
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>
