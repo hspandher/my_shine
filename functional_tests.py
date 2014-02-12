@@ -23,22 +23,25 @@ class NewVisitorTest(unittest.TestCase):
 
         raise AssertionError("No element having tag {tag_name} and value {display_value}".format(tag_name = tag_name, display_value = display_value))
 
-    # def fill_input_text_field(self, field_names):
-    #     for field_name in field_names:
-    #         input_field = self.b
+    def fill_input_text_field(self, field_names_to_values):
+        for field_name in field_names_to_values:
+            input_field = self.browser.find_element_by_name(field_name)
+            input_field.send_keys(field_names_to_values[field_name])
+
+    def check_checkboxes(self, checkbox_names_to_bool):
+        for checkbox_name in checkbox_names_to_bool:
+            if checkbox_names_to_bool[checkbox_name]:
+                checkbox = self.browser.find_element_by_name(checkbox_name)
+                if not checkbox.is_selected():
+                    checkbox.click()
 
     def fill_and_submit_registration_form(self, details):
-        email_field = self.browser.find_element_by_name('email')
-        email_field.send_keys(details['email'])
+        input_fields_details = {}
+        for field_name in details:
+            if type(details[field_name]) == str:
+                input_fields_details[field_name] = details[field_name]
 
-        password_field = self.browser.find_element_by_name('password')
-        password_field.send_keys(details['password'])
-
-        confirm_password_field = self.browser.find_element_by_name('confirm_password')
-        confirm_password_field.send_keys(details['confirm_password'])
-
-        mobile_number_field = self.browser.find_element_by_name('mobile_number')
-        mobile_number_field.send_keys(details['mobile_number'])
+        self.fill_input_text_field(input_fields_details)
 
         if details['check_terms']:
             terms_checkbox = self.browser.find_element_by_name('terms_and_conditions')
