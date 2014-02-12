@@ -9,9 +9,9 @@ from mini_shine.forms import RegistrationForm
 def home(request):
     return render_to_response('home.html')
 
-@csrf_protect
+# @csrf_protect
 def register(request):
     form = RegistrationForm()
-    csrfContext = RequestContext(request)
-    return render_to_response('register.html', { 'form': form }, csrfContext)
+    # csrfContext = RequestContext(request)
+    return render_to_response('register.html', { 'form': form })
 

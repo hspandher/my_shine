@@ -90,6 +90,8 @@ class NewVisitorTest(unittest.TestCase):
         details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'check_terms': True}
         self.fill_and_submit_registration_form(details)
 
+        time.sleep(5)
+
         # She is redirected to a rather long form asking of lot of details.
 
         # Personal Details :-
