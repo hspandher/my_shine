@@ -39,7 +39,12 @@ class HomePageTest(TestCase):
 class RegisterPageTest(TestCase):
 
     def setUp(self):
-        self.response = register(HttpRequest)
+        self.response = register(HttpRequest())
+
+    def submit_post_form_to_view(self, link, form_details):
+        factory = APIRequestFactory()
+        request = factory.post(link, form_details)
+        return register(request), RegistrationForm(request.POST)
 
     def test_register_url_points_to_view(self):
         found = resolve('/register/')
@@ -66,28 +71,28 @@ class RegisterPageTest(TestCase):
             self.assertIn(field_name, self.response.content)
 
     def test_register_view_redirects_to_profile_add_after_registration(self):
-        factory = APIRequestFactory()
-        request = factory.post('/register/',{
+        link = '/register/'
+        form_details = {
                 'email': 'hspandher@outlook.com',
                 'password': 'punit3242',
                 'confirm_password': 'punit3242',
                 'mobile_number': '9347384284',
                 'terms_and_conditions': 'checked'
-            })
-        self.assertRedirects(register(request), '/profile/add/personal-details')
+            }
+        response, placeholder = self.submit_post_form_to_view(link, form_details)
+        self.assertEqual(response.status_code, 302)
 
     def test_register_view_does_not_redirect_after_error_form_info(self):
-        factory = APIRequestFactory()
-        request = factory.post('/register/',{
+        link = '/register/'
+        form_details = {
                 'email': 'hspandher@outlook.com',
                 'password': 'punit3242',
                 'confirm_password': 'punit32423',
                 'mobile_number': '9347384284324234243343',
                 'terms_and_conditions': 'checked'
-            })
-        form = RegistrationForm(request.POST)
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
         expected_html = render_to_string('register.html', {'form': form})
-        response = register(request)
         self.assertEqual(expected_html, response.content)
 
 
