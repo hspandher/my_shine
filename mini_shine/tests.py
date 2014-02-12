@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
+from rest_framework.test import APIRequestFactory
 from mini_shine.views import home, register
 from mini_shine.forms import RegistrationForm
 
@@ -63,4 +64,30 @@ class RegisterPageTest(TestCase):
         input_fields_names = ['email', 'password', 'confirm_password', 'mobile_number']
         for field_name in input_fields_names:
             self.assertIn(field_name, self.response.content)
+
+    def test_register_view_redirects_to_profile_add_after_registration(self):
+        factory = APIRequestFactory()
+        request = factory.post('/register/',{
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3242',
+                'mobile_number': '9347384284',
+                'terms_and_conditions': 'checked'
+            })
+        self.assertRedirects(register(request), '/profile/add/personal-details')
+
+    def test_register_view_does_not_redirect_after_error_form_info(self):
+        factory = APIRequestFactory()
+        request = factory.post('/register/',{
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit32423',
+                'mobile_number': '9347384284324234243343',
+                'terms_and_conditions': 'checked'
+            })
+        form = RegistrationForm(request.POST)
+        expected_html = render_to_string('register.html', {'form': form})
+        response = register(request)
+        self.assertEqual(expected_html, response.content)
+
 
