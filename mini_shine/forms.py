@@ -11,3 +11,9 @@ class RegistrationForm(forms.Form):
     mobile_number = forms.RegexField(regex = r'^\+?\d{9,15}$', widget = forms.TextInput(attrs = {'placeholder': 'Mobile Number' }))
 
     terms_and_conditions = forms.BooleanField(label = 'I agree to terms and conditions')
+
+    def clean(self):
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password != confirm_password:
+            raise forms.ValidationError('Password and Confirm Password doesn\'t match')

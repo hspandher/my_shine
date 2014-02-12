@@ -95,4 +95,71 @@ class RegisterPageTest(TestCase):
         expected_html = render_to_string('register.html', {'form': form})
         self.assertEqual(expected_html, response.content)
 
+    def test_register_view_does_not_accept_invalid_email(self):
+        link = '/register/'
+        form_details = {
+                'email': 'hspandhe.r@outlook@com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3242',
+                'mobile_number': '9347384284',
+                'terms_and_conditions': 'checked'
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_html = render_to_string('register.html', {'form': form})
+        self.assertEqual(expected_html, response.content)
+
+    def test_register_view_does_not_accept_mobile_number(self):
+        link = '/register/'
+        form_details = {
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3242',
+                'mobile_number': '934738428432323232',
+                'terms_and_conditions': True
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_html = render_to_string('register.html', {'form': form})
+        self.assertEqual(expected_html, response.content)
+
+    def test_register_view_does_not_accept_if_terms_not_agreed(self):
+        link = '/register/'
+        form_details = {
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3242',
+                'mobile_number': '9347384284',
+                'terms_and_conditions': False
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_html = render_to_string('register.html', {'form': form})
+        self.assertEqual(expected_html, response.content)
+
+    def test_register_view_not_accept_if_password_not_match_confirm_password(self):
+        link = '/register/'
+        form_details = {
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3243',
+                'mobile_number': '9347384232',
+                'terms_and_conditions': True
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_html = render_to_string('register.html', {'form': form})
+        self.assertEqual(expected_html, response.content)
+
+
+    def test_register_view_does_not_accept_if_fields_are_missing(self):
+        link = '/register/'
+        form_details = {
+                'email': 'hspandher@outlook.com',
+                'mobile_number': '9347384284',
+                'terms_and_conditions': False
+            }
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_html = render_to_string('register.html', {'form': form})
+        self.assertEqual(expected_html, response.content)
+
+
+
+
 
