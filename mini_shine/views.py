@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from mini_shine.forms import RegistrationForm
+from mini_shine.models import Candidate
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -13,9 +15,23 @@ def register(request):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             # Create Model here and save it
+            try:
+                create_model(cleaned_data)
+            except ValidationError:
+                raise Exception('Some internal error occured while registration, Please register again')
+
             return HttpResponseRedirect('/profile/add/personal-details/')
     else:
         form = RegistrationForm()
 
     return render_to_response('register.html', {'form': form})
+
+def create_model(cleaned_data):
+    Candidate(
+        email = cleaned_data.get('email'),
+        first_name = cleaned_data.get('first_name'),
+        last_name = cleaned_data.get('last_name'),
+        city = cleaned_data.get('city'),
+        country = cleaned_data.get('country'),
+        gender = cleaned_data.get('gender')).save()
 

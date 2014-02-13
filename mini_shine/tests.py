@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
 from mini_shine.views import home, register
 from mini_shine.forms import RegistrationForm
+from mini_shine.models import Candidate
 
 
 class HomePageTest(TestCase):
@@ -77,7 +78,7 @@ class RegisterPageTest(TestCase):
         for field_name in input_fields_names:
             self.assertIn(field_name, self.response.content)
 
-    def test_register_view_redirects_to_profile_add_after_registration(self):
+    def test_register_view_redirects_after_registration(self):
         link = '/register/'
         form_details = {
                 'email': 'hspandher@outlook.com',
@@ -148,6 +149,64 @@ class RegisterPageTest(TestCase):
             }
         self.check_registration_validation(form_details)
 
+    def test_candidate_model_creates_when_register_form_details_are_ok(self):
+        initial_num_candidates = Candidate.objects.all().__len__()
+        form_details = {
+                'email': 'hspandher@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3243',
+                'mobile_number': '9347384232',
+                'terms_and_conditions': True
+            }
+        response, form = self.submit_post_form_to_view('/register/', form_details)
+        final_num_candidates = Candidate.objects.all().__len__()
+        self.assertEqual(initial_num_candidates + 1, final_num_candidates, 'model is not created as desired')
+
+
+class CandidateModelTest(TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M')
+
+    def is_candidate_valid(self):
+        try:
+            self.candidate.save()
+        except:
+            return False
+        else:
+            return True
+
+    def has_appropriate_validation(self, attribute_name, invalid_attributes = ['', 'aa', 'j'*51]):
+        for invalid_attribute in invalid_attributes:
+            setattr(self.candidate, attribute_name, invalid_attribute)
+            if self.is_candidate_valid():
+                self.fail("{attr_value} should not be a valid {attribute_name}, but it passes".format(attr_value = invalid_attribute, attribute_name = attribute_name))
+
+    def test_candidate_rejects_invalid_email(self):
+        invalid_emails = ['lsflsdjf', 'ksjfls@slfls', 'lsjfldsfj.com']
+        self.has_appropriate_validation('email', invalid_emails)
+
+    def test_candidate_rejects_invalid_first_name(self):
+        self.has_appropriate_validation('first_name')
+
+    def test_candidate_rejects_invalid_last_name(self):
+        self.has_appropriate_validation('last_name')
+
+    def test_candidate_rejects_invalid_city(self):
+        self.has_appropriate_validation('city')
+
+    def test_candidate_rejects_invalid_country(self):
+        self.has_appropriate_validation('country')
+
+    def test_candidate_rejects_invalid_gender(self):
+        invalid_genders = ['a', 'sjf', '1', 'slfsl']
+        self.has_appropriate_validation('gender', invalid_genders)
 
 
 

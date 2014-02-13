@@ -77,11 +77,12 @@ class NewVisitorTest(unittest.TestCase):
         self.find_tag_by_display_value('a', 'Register Now!').click()
         self.assertIn('/register/', self.browser.current_url)
 
-        # The form requires her to fill Email, Password, Confirm Password, Mobile Number
+        # The form requires her to fill Email, Password, Confirm Password, Mobile Number and gender
         self.browser.find_element_by_css_selector("input[placeholder='Email']")
         self.browser.find_element_by_css_selector("input[placeholder='Password']")
         self.browser.find_element_by_css_selector("input[placeholder='Confirm Password']")
         self.browser.find_element_by_css_selector("input[placeholder='Mobile Number']")
+        self.browser.find_element_by_css_selector('input[type="radio"][name="gender"]')
 
         # and checkbox for terms and conditions
         self.browser.find_element_by_css_selector('input[type="checkbox"][name="terms_and_conditions"]')
@@ -100,10 +101,11 @@ class NewVisitorTest(unittest.TestCase):
         # She clicks the button 'Register'
 
         details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True}
+
         self.fill_and_submit_form(details)
 
         # She is redirected to a rather long form asking of lot of details.
-        self.assertIn('/profile/add/personal-details/', self.browser.current_url)
+        self.assertRegexpMatches(self.browser.current_url ,r'/candidate/\d{1,10}/add/')
 
         # Personal Details :-
         # Name - first_name, last_name
