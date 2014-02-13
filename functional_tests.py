@@ -100,7 +100,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # She clicks the button 'Register'
 
-        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True}
+        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True, 'radio': 'M'}
 
         self.fill_and_submit_form(details)
 

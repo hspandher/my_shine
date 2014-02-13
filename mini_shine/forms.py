@@ -10,7 +10,7 @@ class RegistrationForm(forms.Form):
 
     mobile_number = forms.RegexField(regex = r'^\+?\d{9,15}$', widget = forms.TextInput(attrs = {'placeholder': 'Mobile Number' }))
 
-    gender = forms.ChoiceField(choices = [('M', 'M'), ('F', 'f')], widget = forms.RadioSelect())
+    gender = forms.ChoiceField(widget = forms.RadioSelect, choices = (('M', 'Male'), ('F', 'Female')))
 
     terms_and_conditions = forms.BooleanField(label = 'I agree to terms and conditions')
 
