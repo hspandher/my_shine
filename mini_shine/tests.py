@@ -47,12 +47,6 @@ class RegisterPageTest(TestCase):
         request = factory.post(link, form_details)
         return register(request), RegistrationForm(request.POST)
 
-    # def check_registration_validation(self, form_details):
-    #     link = '/register/'
-    #     response, form = self.submit_post_form_to_view(link, form_details)
-    #     expected_response = render_to_string('register.html', {'form': form})
-    #     self.assertEqual(expected_response, response.content)
-
     def check_registration_validation(self, form_details):
         link = '/register/'
         response, form = self.submit_post_form_to_view(link, form_details)
