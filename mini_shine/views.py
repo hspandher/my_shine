@@ -15,10 +15,12 @@ def register(request):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             # Create Model here and save it
-            try:
-                create_model(cleaned_data)
-            except ValidationError:
-                raise Exception('Some internal error occured while registration, Please register again')
+            # try:
+            #     create_model(cleaned_data)
+            # except ValidationError:
+            #     raise Exception('Some internal error occured while registration, Please register again')
+
+            create_model(cleaned_data)
 
             return HttpResponseRedirect('/profile/add/personal-details/')
     else:

@@ -19,8 +19,12 @@ class RegistrationForm(forms.Form):
         if not terms_and_conditions:
             raise forms.ValidationError('You must agree to terms and conditions')
 
+        return self.cleaned_data['terms_and_conditions']
+
     def clean(self):
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')
         if password != confirm_password:
             raise forms.ValidationError('Password and Confirm Password doesn\'t match')
+
+        return self.cleaned_data

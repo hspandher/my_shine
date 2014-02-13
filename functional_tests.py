@@ -103,6 +103,7 @@ class NewVisitorTest(unittest.TestCase):
         details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True, 'radio': 'M'}
 
         self.fill_and_submit_form(details)
+        time.sleep(30)
 
         # She is redirected to a rather long form asking of lot of details.
         self.assertRegexpMatches(self.browser.current_url ,r'/candidate/\d{1,10}/add/')
