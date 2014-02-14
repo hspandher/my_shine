@@ -77,12 +77,15 @@ class NewVisitorTest(unittest.TestCase):
         self.find_tag_by_display_value('a', 'Register Now!').click()
         self.assertIn('/register/', self.browser.current_url)
 
-        # The form requires her to fill Email, Password, Confirm Password, Mobile Number and gender
+        # The form requires her to fill Email, Password, Confirm Password, Mobile Number, city, country and gender
         self.browser.find_element_by_css_selector("input[placeholder='Email']")
         self.browser.find_element_by_css_selector("input[placeholder='Password']")
         self.browser.find_element_by_css_selector("input[placeholder='Confirm Password']")
         self.browser.find_element_by_css_selector("input[placeholder='Mobile Number']")
         self.browser.find_element_by_css_selector('input[type="radio"][name="gender"]')
+        self.browser.find_element_by_css_selector("input[placeholder='First Name']")
+        self.browser.find_element_by_css_selector("input[placeholder='Last Name']")
+
 
         # and checkbox for terms and conditions
         self.browser.find_element_by_css_selector('input[type="checkbox"][name="terms_and_conditions"]')
@@ -94,17 +97,25 @@ class NewVisitorTest(unittest.TestCase):
 
         # confirm_password:- 'edith3099'
 
+        # first_name:- 'Edith'
+
+        # last_name:- 'Nash'
+
+        # city:- 'Massachussets'
+
+        # country:- 'USA'
+
         # mobile_no:- '9934734234'
 
         # She agrees to terms and conditions
 
         # She clicks the button 'Register'
 
-        details = {'email': 'edith432@gmail.com', 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True, 'radio': 'M'}
+        details = {'email': 'edith432@gmail.com', 'first_name': 'Edith', 'last_name': 'Nash', 'city': 'Massachussets', 'country': 'USA' , 'password': 'edith3099', 'confirm_password': 'edith3099', 'mobile_number': '9934734234', 'terms_and_conditions': True, 'radio': 'M'}
 
         self.fill_and_submit_form(details)
-        time.sleep(30)
 
+        time.sleep(30)
         # She is redirected to a rather long form asking of lot of details.
         self.assertRegexpMatches(self.browser.current_url ,r'/candidate/\d{1,10}/add/')
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+import re
 # Create your models here.
 
 class ValidateOnSaveMixin(object):
@@ -10,6 +11,9 @@ class ValidateOnSaveMixin(object):
             self.full_clean()
         super(ValidateOnSaveMixin, self).save(force_insert, force_update,
                                               **kwargs)
+def validate_email_uniqueness(value):
+    if Candidate.objects.filter(email = value):
+        raise ValidationError('Email already exists in database')
 
 def validate_length(value):
     if len(value) < 3:
@@ -21,14 +25,21 @@ def validate_gender(value):
     else:
         raise ValidationError('Gender should be either "M" or "F"')
 
+def validate_mobile_number(value):
+    valid = re.match(r'^\d{9,15}$', value)
+    if not valid:
+        raise ValidationError('Not a valid mobile Number')
+
 class Candidate(ValidateOnSaveMixin, models.Model):
 
-    email = models.EmailField(validators = [validate_email])
+    email = models.EmailField(validators = [validate_email, validate_email_uniqueness], unique = True)
     first_name = models.CharField(validators = [validate_length], max_length = 40)
     last_name = models.CharField(validators = [validate_length], max_length = 40)
     city = models.CharField(validators = [validate_length], max_length = 40)
     country = models.CharField(validators = [validate_length], max_length = 40)
     gender = models.CharField(validators = [validate_gender], max_length = 1)
+    password = models.CharField(validators = [validate_length], max_length = 40)
+    mobile_number = models.CharField(validators = [validate_mobile_number], max_length = 15)
 
 class WorkExperience(models.Model):
 

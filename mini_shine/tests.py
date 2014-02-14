@@ -42,6 +42,17 @@ class RegisterPageTest(TestCase):
 
     def setUp(self):
         self.response = register(HttpRequest())
+        self.form_details = {
+                'email': 'hspandher2@outlook.com',
+                'password': 'punit3242',
+                'confirm_password': 'punit3242',
+                'mobile_number': '9347384284',
+                'terms_and_conditions': 'checked',
+                'first_name': 'Hakampreet Singh',
+                'last_name': 'Pandher',
+                'country': 'India',
+                'city': 'Ludhiana'
+            }
 
     def submit_post_form_to_view(self, link, form_details):
         factory = APIRequestFactory()
@@ -74,71 +85,34 @@ class RegisterPageTest(TestCase):
         self.assertIn('form', self.response.content)
 
     def test_register_view_has_correct_form_fields(self):
-        input_fields_names = ['email', 'password', 'confirm_password', 'mobile_number']
+        input_fields_names = ['email', 'password', 'confirm_password', 'mobile_number', 'gender', 'first_name', 'last_name', 'city', 'country']
         for field_name in input_fields_names:
             self.assertIn(field_name, self.response.content)
 
     def test_register_view_redirects_after_registration(self):
         link = '/register/'
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3242',
-                'mobile_number': '9347384284',
-                'terms_and_conditions': 'checked'
-            }
-        response, placeholder = self.submit_post_form_to_view(link, form_details)
+        response, placeholder = self.submit_post_form_to_view(link, self.form_details)
         self.assertEqual(response.status_code, 302)
 
     def test_register_view_does_not_redirect_after_error_form_info(self):
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit32423',
-                'mobile_number': '9347384284324234243343',
-                'terms_and_conditions': 'checked'
-            }
-        self.check_registration_validation(form_details)
+        self.form_details['mobile_number'] = '9347384284324234243343'
+        self.check_registration_validation(self.form_details)
 
     def test_register_view_does_not_accept_invalid_email(self):
-        form_details = {
-                'email': 'hspandhe.r@outlook@com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3242',
-                'mobile_number': '9347384284',
-                'terms_and_conditions': 'checked'
-            }
-        self.check_registration_validation(form_details)
+        self.form_details['email'] = 'hspandhe.r@outlook@com'
+        self.check_registration_validation(self.form_details)
 
     def test_register_view_does_not_accept_mobile_number(self):
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3242',
-                'mobile_number': '934738428432323232',
-                'terms_and_conditions': True
-            }
-        self.check_registration_validation(form_details)
+        self.form_details['mobile_number'] = '934738428432323232'
+        self.check_registration_validation(self.form_details)
 
     def test_register_view_does_not_accept_if_terms_not_agreed(self):
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3242',
-                'mobile_number': '9347384284',
-                'terms_and_conditions': False
-            }
-        self.check_registration_validation(form_details)
+        self.form_details['terms_and_conditions'] = False
+        self.check_registration_validation(self.form_details)
 
     def test_register_view_not_accept_if_password_not_match_confirm_password(self):
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3243',
-                'mobile_number': '9347384232',
-                'terms_and_conditions': True
-            }
-        self.check_registration_validation(form_details)
+        self.form_details['confirm_password'] = 'foo'
+        self.check_registration_validation(self.form_details)
 
 
     def test_register_view_does_not_accept_if_fields_are_missing(self):
@@ -150,17 +124,8 @@ class RegisterPageTest(TestCase):
         self.check_registration_validation(form_details)
 
     def test_candidate_model_creates_when_register_form_details_are_ok(self):
-        initial_num_candidates = Candidate.objects.all().__len__()
-        form_details = {
-                'email': 'hspandher@outlook.com',
-                'password': 'punit3242',
-                'confirm_password': 'punit3243',
-                'mobile_number': '9347384232',
-                'terms_and_conditions': True
-            }
-        response, form = self.submit_post_form_to_view('/register/', form_details)
-        final_num_candidates = Candidate.objects.all().__len__()
-        self.assertEqual(initial_num_candidates + 1, final_num_candidates, 'model is not created as desired')
+        self.submit_post_form_to_view('/register/', self.form_details)
+        self.assertTrue(Candidate.objects.filter(email = self.form_details['email']))
 
 
 class CandidateModelTest(TestCase):
@@ -172,7 +137,9 @@ class CandidateModelTest(TestCase):
             last_name = 'Pandher',
             country = 'India',
             city = 'Ludhiana',
-            gender = 'M')
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
 
     def is_candidate_valid(self):
         try:
@@ -181,6 +148,7 @@ class CandidateModelTest(TestCase):
             return False
         else:
             return True
+
 
     def has_appropriate_validation(self, attribute_name, invalid_attributes = ['', 'aa', 'j'*51]):
         for invalid_attribute in invalid_attributes:
@@ -208,6 +176,13 @@ class CandidateModelTest(TestCase):
         invalid_genders = ['a', 'sjf', '1', 'slfsl']
         self.has_appropriate_validation('gender', invalid_genders)
 
+    def test_candidate_rejects_invalid_mobile_number(self):
+        invalid_mobile_numbers = ['342424', '3242', '134242432a', 'slfsl']
+        self.has_appropriate_validation('gender', invalid_mobile_numbers)
 
+    def test_valid_candidate_is_accepted(self):
+        self.assertTrue(self.is_candidate_valid())
 
-
+    def test_candidate_with_already_existing_email_is_rejected(self):
+        self.candidate.save()
+        self.assertFalse(self.is_candidate_valid())
