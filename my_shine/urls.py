@@ -11,5 +11,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'mini_shine.views.home'),
     url(r'register/', 'mini_shine.views.register'),
-    url(r'^candidate/\d{1,10}/add-details/$', 'mini_shine.views.add_details')
+    url(r'^candidate/\d{1,10}/add-work-experience/$', 'mini_shine.views.add_work_experience')
 )

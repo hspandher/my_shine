@@ -4,12 +4,20 @@ from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
-from mini_shine.views import home, register
-from mini_shine.forms import RegistrationForm
+from mini_shine.views import home, register, add_work_experience
+from mini_shine.forms import RegistrationForm, WorkExperienceForm
 from mini_shine.models import Candidate, WorkExperience
 
 
 import pdb
+
+class CommonTestMethodMixin(TestCase):
+
+    def submit_post_form_to_view(self, link, form_details):
+        factory = APIRequestFactory()
+        request = factory.post(link, form_details)
+        return register(request), RegistrationForm(request.POST)
+
 
 class HomePageTest(TestCase):
 
@@ -40,7 +48,7 @@ class HomePageTest(TestCase):
         self.assertRegexpMatches(self.response.content, r'<a(.|\n)*?\/register\/(.|\n)*?>(.|\n)*?Register Now!(.|\n)*?<\/a>', 'Register Now link doesn\'t have right url')
 
 
-class RegisterPageTest(TestCase):
+class RegisterPageTest(CommonTestMethodMixin, TestCase):
 
     def setUp(self):
         self.response = register(HttpRequest())
@@ -56,11 +64,6 @@ class RegisterPageTest(TestCase):
                 'city': 'Ludhiana',
                 'gender': 'M'
             }
-
-    def submit_post_form_to_view(self, link, form_details):
-        factory = APIRequestFactory()
-        request = factory.post(link, form_details)
-        return register(request), RegistrationForm(request.POST)
 
     def check_registration_validation(self, form_details):
         link = '/register/'
@@ -243,7 +246,51 @@ class WorkExperienceModelTest(TestCase):
         self.has_appropriate_validation('is_experienced', invalid_is_experienced_values)
 
 
+class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
 
+    def setUp(self):
+        self.response = add_work_experience(HttpRequest())
 
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
 
+        self.candidate.save()
+        self.url = "/candidate/{id}/add-work-experience/".format(id = self.candidate.id)
+        self.form_details = {
+            'is_experienced': True,
+            'years_of_experience': 4,
+            'months_of_experience': 5
+        }
 
+    def test_work_url_resolves_to_right_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func, add_work_experience)
+
+    def test_work_view_returns_http_response_object(self):
+        self.assertIsInstance(self.response, HttpResponse)
+
+    def test_work_view_uses_right_template(self):
+        expected_response = render_to_response('work_experience.html', { 'form': WorkExperienceForm()})
+        self.assertEqual(expected_response.content, self.response.content)
+
+    def test_work_view_has_right_title(self):
+        self.assertIn('<title>Add Work Experience</title>', self.response.content)
+
+    def test_work_view_has_right_header(self):
+        self.assertIn('<h1>Add Work Experience</h1>', self.response.content)
+
+    def test_work_view_has_correct_form_fields(self):
+        input_fields_names = ['years_of_experience', 'months_of_experience', 'is_experienced']
+        for field_name in input_fields_names:
+            self.assertIn(field_name, self.response.content)
+
+    def test_work_view_redirects_after_successful_submission(self):
+        response, _ = self.submit_post_form_to_view(self.url, self.form_details)
+        self.assertEqual(response.status_code, 302)

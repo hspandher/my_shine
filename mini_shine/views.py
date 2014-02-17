@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
-from mini_shine.forms import RegistrationForm
+from mini_shine.forms import RegistrationForm, WorkExperienceForm
 from mini_shine.models import Candidate
 from django.core.exceptions import ValidationError
 
@@ -20,11 +20,30 @@ def register(request):
             except ValidationError:
                 raise Exception('Some internal error occured while registration, Please register again')
 
-            return HttpResponseRedirect("/candidate/{id}/add-details/".format(id = id))
+            return HttpResponseRedirect("/candidate/{id}/add-work-experience/".format(id = id))
     else:
         form = RegistrationForm()
 
     return render_to_response('register.html', {'form': form})
+
+def add_work_experience(request):
+    if request.method == 'POST':
+        form = WorkExperienceForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+
+            try:
+                pass
+                # id = create_model(cleaned_data)
+            except ValidationError:
+                raise Exception('Some internal error occured while adding Experiencing Details, Please fill form again')
+
+            return HttpResponseRedirect("/candidate/{id}/add-qualifications/".format(id = id))
+    else:
+        form = WorkExperienceForm()
+
+    return render_to_response('work_experience.html', { 'form': form, 'target_url': request.get_full_path() })
+
 
 def create_model(cleaned_data):
     Candidate(
@@ -38,5 +57,3 @@ def create_model(cleaned_data):
         mobile_number = cleaned_data.get('mobile_number')).save()
     return Candidate.objects.get(email = cleaned_data.get('email')).id
 
-def add_details(request):
-    pass

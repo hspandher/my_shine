@@ -39,10 +39,16 @@ class RegistrationForm(forms.Form):
         return self.cleaned_data['terms_and_conditions']
 
     def clean(self):
-        email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')
         if password != confirm_password:
             raise forms.ValidationError('Password and Confirm Password doesn\'t match')
 
         return self.cleaned_data
+
+
+class WorkExperienceForm(forms.Form):
+
+    is_experienced = forms.BooleanField(label = 'Do you have work experience')
+    years_of_experience = forms.ChoiceField(choices = tuple((value, str(value)) for value in range(0, 71)), widget = forms.Select(attrs = {'class': 'form-control'}))
+    months_of_experience = forms.ChoiceField(choices = tuple((value, str(value)) for value in range(0, 12)), widget = forms.Select(attrs = {'class': 'form-control'}))

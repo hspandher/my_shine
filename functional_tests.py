@@ -93,9 +93,6 @@ class NewVisitorTest(unittest.TestCase):
 
 
         # and checkbox for terms and conditions
-        self.browser.find_element_by_css_selector('input[type="select"][name="years_of_experience"]')
-
-        self.browser.find_element_by_css_selector('input[type="select"][name="months_of_experience"]')
 
         # She fills the form with:-
         # email:- 'edith432@gmail.com'
@@ -122,9 +119,11 @@ class NewVisitorTest(unittest.TestCase):
 
         self.fill_and_submit_form(details)
 
+        time.sleep(10)
+
 
         # She is redirected to a rather long form asking of lot of details.
-        self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/add-details\/$')
+        self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/add-work-experience\/$')
 
 
         # Work Experience :-
@@ -133,6 +132,9 @@ class NewVisitorTest(unittest.TestCase):
 
         self.browser.find_element_by_css_selector('input[type="radio"][name="is_experienced"]')
 
+        self.browser.find_element_by_css_selector('input[type="select"][name="years_of_experience"]')
+
+        self.browser.find_element_by_css_selector('input[type="select"][name="months_of_experience"]')
 
 
         # Educational Details :-
