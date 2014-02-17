@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from mini_shine.models import Candidate
 
 import time
 
@@ -10,6 +11,10 @@ class NewVisitorTest(unittest.TestCase):
         self.browser = webdriver.Firefox()
 
     def tearDown(self):
+        try:
+            Candidate.objects.all()[0].delete()
+        except:
+            pass
         self.browser.quit()
 
     def assert_element_exists_by_name(self, name, tag_name):
@@ -88,7 +93,9 @@ class NewVisitorTest(unittest.TestCase):
 
 
         # and checkbox for terms and conditions
-        self.browser.find_element_by_css_selector('input[type="checkbox"][name="terms_and_conditions"]')
+        self.browser.find_element_by_css_selector('input[type="select"][name="years_of_experience"]')
+
+        self.browser.find_element_by_css_selector('input[type="select"][name="months_of_experience"]')
 
         # She fills the form with:-
         # email:- 'edith432@gmail.com'
@@ -115,19 +122,18 @@ class NewVisitorTest(unittest.TestCase):
 
         self.fill_and_submit_form(details)
 
-        time.sleep(30)
+
         # She is redirected to a rather long form asking of lot of details.
-        self.assertRegexpMatches(self.browser.current_url ,r'/candidate/\d{1,10}/add/')
+        self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/add-details\/$')
 
-        # Personal Details :-
-        # Name - first_name, last_name
-
-        # Current Location: - select city, country
-        # Gender:- Male, Female
 
         # Work Experience :-
         # Are you:- Fresher, Experienced
         # Total Experience:- Select Years, Select Months
+
+        self.browser.find_element_by_css_selector('input[type="radio"][name="is_experienced"]')
+
+
 
         # Educational Details :-
         # Highest Qualification:- Post-Graduate, Graduate, XII, X

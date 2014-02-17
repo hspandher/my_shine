@@ -6,8 +6,10 @@ from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
 from mini_shine.views import home, register
 from mini_shine.forms import RegistrationForm
-from mini_shine.models import Candidate
+from mini_shine.models import Candidate, WorkExperience
 
+
+import pdb
 
 class HomePageTest(TestCase):
 
@@ -51,7 +53,8 @@ class RegisterPageTest(TestCase):
                 'first_name': 'Hakampreet Singh',
                 'last_name': 'Pandher',
                 'country': 'India',
-                'city': 'Ludhiana'
+                'city': 'Ludhiana',
+                'gender': 'M'
             }
 
     def submit_post_form_to_view(self, link, form_details):
@@ -186,3 +189,61 @@ class CandidateModelTest(TestCase):
     def test_candidate_with_already_existing_email_is_rejected(self):
         self.candidate.save()
         self.assertFalse(self.is_candidate_valid())
+
+
+class WorkExperienceModelTest(TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
+
+        self.candidate.save()
+
+        self.work_experience = WorkExperience(
+            candidate = self.candidate,
+            is_experienced = True,
+            years_of_experience = 3,
+            months_of_experience = 10)
+
+    def is_work_experience_valid(self):
+        try:
+            self.work_experience.save()
+        except:
+            return False
+        else:
+            return True
+
+    def has_appropriate_validation(self, attribute_name, invalid_attributes):
+        for invalid_attribute in invalid_attributes:
+            setattr(self.work_experience, attribute_name, invalid_attribute)
+            if self.is_work_experience_valid():
+                self.fail("{attr_value} should not be a valid {attribute_name}, but it passes".format(attr_value = invalid_attribute, attribute_name = attribute_name))
+
+    def test_work_experience_must_have_valid_candidate(self):
+        Candidate.objects.get(email = self.work_experience.candidate.email).delete()
+        self.assertFalse(self.is_work_experience_valid(), 'Work Experience Candidate does not exist in the database')
+
+    def test_work_experience_rejects_invalid_years_of_experience(self):
+        invalid_years = [342, -10, -4, 100, 1700, -1, 99]
+        self.has_appropriate_validation('years_of_experience', invalid_years)
+
+    def test_work_experience_rejects_invalid_months_of_experience(self):
+        invalid_months = [-2, 13, -1, 234]
+        self.has_appropriate_validation('months_of_experience', invalid_months)
+
+    def test_work_experience_rejects_invalid_is_experienced_value(self):
+        invalid_is_experienced_values = [32, '2', 'yes', 4]
+        self.has_appropriate_validation('is_experienced', invalid_is_experienced_values)
+
+
+
+
+
+

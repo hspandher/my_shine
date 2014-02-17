@@ -30,6 +30,14 @@ def validate_mobile_number(value):
     if not valid:
         raise ValidationError('Not a valid mobile Number')
 
+def validate_years(value):
+    if value != int(value) or value >= 70 or value < 0:
+        raise ValidationError('Invalid value for the year')
+
+def validate_months(value):
+    if value != int(value) or value > 12 or value < 0:
+        raise ValidationError('Invalid value for months')
+
 class Candidate(ValidateOnSaveMixin, models.Model):
 
     email = models.EmailField(validators = [validate_email, validate_email_uniqueness], unique = True)
@@ -41,9 +49,10 @@ class Candidate(ValidateOnSaveMixin, models.Model):
     password = models.CharField(validators = [validate_length], max_length = 40)
     mobile_number = models.CharField(validators = [validate_mobile_number], max_length = 15)
 
-class WorkExperience(models.Model):
+class WorkExperience(ValidateOnSaveMixin, models.Model):
 
-    user = models.ForeignKey(Candidate)
-    experienced = models.BooleanField()
-    years_of_experience = models.SmallIntegerField()
-    months_of_experience = models.SmallIntegerField()
+    candidate = models.ForeignKey(Candidate)
+    is_experienced = models.BooleanField()
+    years_of_experience = models.SmallIntegerField(validators = [validate_years])
+    months_of_experience = models.SmallIntegerField(validators = [validate_months])
+

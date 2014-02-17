@@ -14,7 +14,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            # Create Model here and save it
+
             try:
                 id = create_model(cleaned_data)
             except ValidationError:
@@ -38,3 +38,5 @@ def create_model(cleaned_data):
         mobile_number = cleaned_data.get('mobile_number')).save()
     return Candidate.objects.get(email = cleaned_data.get('email')).id
 
+def add_details(request):
+    pass
