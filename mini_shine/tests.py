@@ -18,6 +18,14 @@ class CommonTestMethodMixin(TestCase):
         request = factory.post(link, form_details)
         return register(request), RegistrationForm(request.POST)
 
+    def is_valid(self, object_name):
+        try:
+            getattr(self, object_name).save()
+        except:
+            return False
+        else:
+            return True
+
 
 class HomePageTest(TestCase):
 
@@ -134,7 +142,7 @@ class RegisterPageTest(CommonTestMethodMixin, TestCase):
         self.assertTrue(Candidate.objects.filter(email = self.form_details['email']))
 
 
-class CandidateModelTest(TestCase):
+class CandidateModelTest(CommonTestMethodMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -148,12 +156,7 @@ class CandidateModelTest(TestCase):
             mobile_number = '9738472222')
 
     def is_candidate_valid(self):
-        try:
-            self.candidate.save()
-        except:
-            return False
-        else:
-            return True
+        return self.is_valid('candidate')
 
 
     def has_appropriate_validation(self, attribute_name, invalid_attributes = ['', 'aa', 'j'*51]):
@@ -194,7 +197,7 @@ class CandidateModelTest(TestCase):
         self.assertFalse(self.is_candidate_valid())
 
 
-class WorkExperienceModelTest(TestCase):
+class WorkExperienceModelTest(CommonTestMethodMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -216,12 +219,7 @@ class WorkExperienceModelTest(TestCase):
             months_of_experience = 10)
 
     def is_work_experience_valid(self):
-        try:
-            self.work_experience.save()
-        except:
-            return False
-        else:
-            return True
+        return self.is_valid('work_experience')
 
     def has_appropriate_validation(self, attribute_name, invalid_attributes):
         for invalid_attribute in invalid_attributes:
@@ -295,3 +293,33 @@ class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
         self.assertEqual(response.status_code, 302)
 
 
+class EducationQualificationsModelTest(CommonTestMethodMixin, TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
+
+        self.candidate.save()
+
+        self.work_experience = WorkExperience(
+            candidate = self.candidate,
+            is_experienced = True,
+            years_of_experience = 3,
+            months_of_experience = 10)
+
+        self.work_experience.save()
+
+        self.education_qualifications = EducationQualifications(
+            highest_qualification = '10+2',
+            education_specialization = 'Non-Medical',
+            institute_name = 'CBSE')
+
+    def are_qualifications_valid(qualifications):
+        return is_valid('qualifications')
