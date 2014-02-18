@@ -67,5 +67,5 @@ class EducationQualifications(ValidateOnSaveMixin, models.Model):
 
     candidate = models.ForeignKey(Candidate)
     highest_qualification = models.CharField(max_length = 40, validators = [validate_highest_qualifications ])
-    education_specialization = models.CharField(max_length = 40)
-    institute_name = models.CharField(max_length = 50)
+    education_specialization = models.CharField(max_length = 40, validators = [ validate_length ])
+    institute_name = models.CharField(max_length = 50, validators = [validate_length ])

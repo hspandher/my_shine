@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from mini_shine.forms import RegistrationForm, WorkExperienceForm
 from mini_shine.models import Candidate
@@ -27,10 +27,8 @@ def register(request):
     return render_to_response('register.html', {'form': form})
 
 def add_work_experience(request, id):
-    try:
-        id = int(id)
-    except ValueError:
-        raise Http404()
+    id = verifies_id_offset(id)
+
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST)
         if form.is_valid():
@@ -48,6 +46,26 @@ def add_work_experience(request, id):
 
     return render_to_response('work_experience.html', { 'form': form, 'target_url': request.get_full_path() })
 
+def add_qualifications(request, id):
+    id = verifies_id_offset
+
+    if request.method == 'POST':
+        form = QualificationsForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+
+            try:
+                pass
+                # id = create_model(cleaned_data)
+            except ValidationError:
+                raise Exception('Some internal error occured while adding Qualifications Details, Please fill form again')
+
+            return HttpResponseRedirect("/candidate/{id}/profile/".format(id = id))
+    else:
+        form = WorkExperienceForm()
+
+    return render_to_response('qualifications.html', { 'form': form, 'target_url': request.get_full_path() })
+
 
 def create_model(cleaned_data):
     Candidate(
@@ -61,3 +79,9 @@ def create_model(cleaned_data):
         mobile_number = cleaned_data.get('mobile_number')).save()
     return Candidate.objects.get(email = cleaned_data.get('email')).id
 
+
+def verifies_id_offset(id):
+    try:
+        return int(id)
+    except ValurError:
+        raise Http404()

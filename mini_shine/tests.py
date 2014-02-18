@@ -4,8 +4,8 @@ from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
-from mini_shine.views import home, register, add_work_experience
-from mini_shine.forms import RegistrationForm, WorkExperienceForm
+from mini_shine.views import home, register, add_work_experience, add_qualifications
+from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
 from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 
 
@@ -327,7 +327,7 @@ class EducationQualificationsModelTest(ModelTestMethodsMixin, TestCase):
     def are_qualifications_valid(self):
         return self.is_valid('qualifications')
 
-    def has_appropriate_validation(self, attribute_name, invalid_attributes):
+    def has_appropriate_validation(self, attribute_name, invalid_attributes = ['a'*51, 'aa', '', 'a']):
         self.verify_all_validations('education_qualifications', attribute_name, invalid_attributes)
 
     def test_qualifications_belong_to_valid_candidate(self):
@@ -337,3 +337,47 @@ class EducationQualificationsModelTest(ModelTestMethodsMixin, TestCase):
     def test_qualifications_rejects_invalid_highest_qualification(self):
         invalid_highest_qualifications = ['ldfjdslf', 'sdjfdls', '10+2ldsjfl']
         self.has_appropriate_validation('highest_qualification', invalid_highest_qualifications)
+
+    def test_qualifications_rejects_invalid_education_specialiazation(self):
+        self.has_appropriate_validation('education_specialization')
+
+    def test_qualifications_rejects_invalid_institute_name(self):
+        self.has_appropriate_validation('institute_name')
+
+
+class QualificationsPageTest(TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
+        self.candidate.save()
+        self.url = "/candidate/{id}/add-qualifications/".format(id = self.candidate.id)
+        self.response = add_qualifications(HttpRequest(), self.candidate.id)
+        self.form_details = {
+            'highest_qualification': '10+2',
+            'education_specialization': 'Non-Medical',
+            'institute_name': 'Anything'
+        }
+
+    def test_qualification_url_resolves_to_right_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func, add_qualifications)
+
+    def test_qualifications_view_returns_http_response(self):
+        self.assertIsInstance(self.response, HttpResponse)
+
+    def test_qualifications_view_uses_right_template(self):
+        expected_response = render_to_response('qualifications.html', { 'form': QualificationsForm() })
+
+    def test_qualifications_view_has_right_title(self):
+        self.assertIn('<title>Add Qualifications</title>', self.response.content)
+
+    def test_qualifications_view_has_right_header(self):
+        self.assertIn('<h1>Add Qualifications</h1>', self.response.content)

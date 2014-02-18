@@ -52,3 +52,17 @@ class WorkExperienceForm(forms.Form):
     is_experienced = forms.BooleanField(label = 'Do you have work experience')
     years_of_experience = forms.ChoiceField(choices = tuple((value, str(value)) for value in range(0, 71)), widget = forms.Select(attrs = {'class': 'form-control'}))
     months_of_experience = forms.ChoiceField(choices = tuple((value, str(value)) for value in range(0, 12)), widget = forms.Select(attrs = {'class': 'form-control'}))
+
+class QualificationsForm(forms.Form):
+
+    highest_qualification = forms.ChoiceField(choices = (
+            ('10', '10th'),
+            ('10+2', '10+2'),
+            ('Graduation', 'Graduation'),
+            ('Post Graduation'),
+            ('Diploma/Vocational Courses')
+        ), widget = forms.Select(attrs = {'class': 'form-control'}))
+
+    education_specialization = forms.CharField(widget = forms.TextInput(attrs = {'placeholder': 'Specialization' }), max_length = 40)
+
+    institute_name = forms.CharField(widget = forms.TextInput(attrs = {'placeholder': 'Institute Name' }), max_length = 40)
