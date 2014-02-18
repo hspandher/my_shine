@@ -66,3 +66,14 @@ class QualificationsForm(forms.Form):
     education_specialization = forms.CharField(widget = forms.TextInput(attrs = {'placeholder': 'Specialization' }), max_length = 40)
 
     institute_name = forms.CharField(widget = forms.TextInput(attrs = {'placeholder': 'Institute Name' }), max_length = 40)
+
+    def clean_highest_qualification(self):
+        highest_qualification = self.cleaned_data.get('highest_qualification')
+        value = highest_qualification
+        if value == '10' or value == '10+2' or value == 'Graduation' or value == 'Post Graduation' or value == 'Diploma/Vocational Courses':
+            pass
+        else:
+            raise forms.ValidationError('Invalid Highest Qualification')
+
+        return self.cleaned_data['highest_qualification']
+

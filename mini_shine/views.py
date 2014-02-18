@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
-from mini_shine.models import Candidate
+from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 from django.core.exceptions import ValidationError
 
 # Create your views here.
@@ -35,8 +35,7 @@ def add_work_experience(request, id):
             cleaned_data = form.cleaned_data
 
             try:
-                pass
-                # id = create_model(cleaned_data)
+                create_work_experience_model(cleaned_data, id)
             except ValidationError:
                 raise Exception('Some internal error occured while adding Experiencing Details, Please fill form again')
 
@@ -47,7 +46,7 @@ def add_work_experience(request, id):
     return render_to_response('work_experience.html', { 'form': form, 'target_url': request.get_full_path() })
 
 def add_qualifications(request, id):
-    id = verifies_id_offset
+    id = verifies_id_offset(id)
 
     if request.method == 'POST':
         form = QualificationsForm(request.POST)
@@ -55,8 +54,7 @@ def add_qualifications(request, id):
             cleaned_data = form.cleaned_data
 
             try:
-                pass
-                # id = create_model(cleaned_data)
+                create_qualifications_model(cleaned_data, id)
             except ValidationError:
                 raise Exception('Some internal error occured while adding Qualifications Details, Please fill form again')
 
@@ -79,9 +77,24 @@ def create_model(cleaned_data):
         mobile_number = cleaned_data.get('mobile_number')).save()
     return Candidate.objects.get(email = cleaned_data.get('email')).id
 
+def create_work_experience_model(cleaned_data, id):
+    return WorkExperience(
+        candidate = Candidate.objects.get(id = id),
+        is_experienced = cleaned_data.get('is_experienced'),
+        years_of_experience = cleaned_data.get('years_of_experience'),
+        months_of_experience = cleaned_data.get('months_of_experience')
+        ).save()
+
+def create_qualifications_model(cleaned_data, id):
+    return EducationQualifications(
+        candidate = Candidate.objects.get(id = id),
+        highest_qualification = cleaned_data.get('highest_qualification'),
+        education_specialization = cleaned_data.get('education_specialization'),
+        institute_name = cleaned_data.get('institute_name')
+        ).save()
 
 def verifies_id_offset(id):
     try:
         return int(id)
-    except ValurError:
+    except ValueError:
         raise Http404()

@@ -21,6 +21,11 @@ class PageTestMethodsMixin:
         else:
             return view_name(request, id), RegistrationForm(request.POST)
 
+    def check_registration_validation(self, form_details, link = '/register/', template = 'register.html'):
+        response, form = self.submit_post_form_to_view(link, form_details)
+        expected_response = render_to_response(template, {'form': form})
+        self.assertEqual(expected_response.content, response.content)
+
 class ModelTestMethodsMixin:
 
     def is_valid(self, object_name):
@@ -84,12 +89,6 @@ class RegisterPageTest(PageTestMethodsMixin, TestCase):
                 'city': 'Ludhiana',
                 'gender': 'M'
             }
-
-    def check_registration_validation(self, form_details):
-        link = '/register/'
-        response, form = self.submit_post_form_to_view(link, form_details)
-        expected_response = render_to_response('register.html', {'form': form})
-        self.assertEqual(expected_response.content, response.content)
 
     def test_register_url_points_to_view(self):
         found = resolve('/register/')
@@ -294,8 +293,14 @@ class WorkExperiencePageTest(PageTestMethodsMixin, TestCase):
             self.assertIn(field_name, self.response.content)
 
     def test_work_view_redirects_after_successful_submission(self):
-        response, form = self.submit_post_form_to_view(self.url, self.form_details, add_work_experience, self.candidate.id)
+        response, _ = self.submit_post_form_to_view(self.url, self.form_details, add_work_experience, self.candidate.id)
         self.assertEqual(response.status_code, 302)
+
+    def test_work_view_updates_database_after_successful_submission(self):
+        response, form = self.submit_post_form_to_view(self.url, self.form_details, add_work_experience, self.candidate.id)
+        self.assertTrue(WorkExperience.objects.get(candidate = self.candidate))
+        self.assertTrue(WorkExperience.objects.get(years_of_experience = 4))
+        self.assertTrue(WorkExperience.objects.get(months_of_experience = 5))
 
 
 class EducationQualificationsModelTest(ModelTestMethodsMixin, TestCase):
@@ -348,7 +353,7 @@ class EducationQualificationsModelTest(ModelTestMethodsMixin, TestCase):
         self.has_appropriate_validation('institute_name')
 
 
-class QualificationsPageTest(TestCase):
+class QualificationsPageTest(PageTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -378,6 +383,7 @@ class QualificationsPageTest(TestCase):
 
     def test_qualifications_view_uses_right_template(self):
         expected_response = render_to_response('qualifications.html', { 'form': QualificationsForm() })
+        self.assertEqual(expected_response.content, self.response.content)
 
     def test_qualifications_view_has_right_title(self):
         self.assertIn('<title>Add Qualifications</title>', self.response.content)
@@ -385,7 +391,15 @@ class QualificationsPageTest(TestCase):
     def test_qualifications_view_has_right_header(self):
         self.assertIn('<h1>Add Qualifications</h1>', self.response.content)
 
-    def test_register_view_has_correct_form_fields(self):
+    def test_qualifications_view_has_correct_form_fields(self):
         input_fields_names = ['highest_qualification', 'education_specialization', 'institute_name']
         for field_name in input_fields_names:
             self.assertIn(field_name, self.response.content)
+
+    def test_qualifications_view_redirects_after_successful_submission(self):
+        response, _ = self.submit_post_form_to_view(self.url, self.form_details, add_qualifications, self.candidate.id)
+        self.assertTrue(EducationQualifications.objects.get(candidate = self.candidate))
+        self.assertTrue(EducationQualifications.objects.get(highest_qualification = self.form_details['highest_qualification']))
+        self.assertTrue(EducationQualifications.objects.get(education_specialization = self.form_details['education_specialization']))
+        self.assertTrue(EducationQualifications.objects.get(institute_name = self.form_details['institute_name']))
+
