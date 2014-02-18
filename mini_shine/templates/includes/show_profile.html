@@ -1,0 +1,57 @@
+<div class='row'>
+    <div class='col-md-offset-1 col-md-4'>
+        <h3>Personal Details</h3>
+        <table class='table table-hover table-bordered'>
+            <tr>
+                <td>Name</td><td>{{ candidate.first_name }} {{ candidate.last_name }}</td>
+            </tr>
+
+            <tr>
+                <td>City</td><td>{{ candidate.city }}</td>
+            </tr>
+
+            <tr>
+                <td>Country</td><td>{{ candidate.country }}</td>
+            </tr>
+
+            <tr>
+                <td>Mobile Number</td><td>{{ candidate.mobile_number }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class='col-md-offset-1 col-md-4'>
+        <h3>Education Qualifications</h3>
+        <table class='table table-hover table-bordered'>
+            <tr>
+                <td>Highest Qualification</td><td>{{ qualifications.highest_qualification }}</td>
+            </tr>
+            <tr>
+                <td>Institute/Board</td>
+                <td>{{ qualifications.institute_name }}</td>
+            </tr>
+            <tr>
+                <td>Specialisation</td>
+                <td>{{ qualifications.education_specialization }}</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<div class='row'>
+    <div class='col-md-offset-2 col-md-6'>
+        <h3>Work Experience Details</h3>
+        <table class='table table-hover table-bordered'>
+            <tr>
+                <td>Years of Experience</td>
+                <td>{{ work_experience.years_of_experience }}</td>
+            </tr>
+            <tr>
+                <td>Months of Experience</td>
+                <td>{{ work_experience.months_of_experience }}</td>
+            </tr>
+
+        </table>
+    </div>
+</div>

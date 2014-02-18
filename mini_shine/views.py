@@ -27,7 +27,7 @@ def register(request):
     return render_to_response('register.html', {'form': form})
 
 def add_work_experience(request, id):
-    id = verifies_id_offset(id)
+    id = verify_id_offset(id)
 
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST)
@@ -46,7 +46,7 @@ def add_work_experience(request, id):
     return render_to_response('work_experience.html', { 'form': form, 'target_url': request.get_full_path() })
 
 def add_qualifications(request, id):
-    id = verifies_id_offset(id)
+    id = verify_id_offset(id)
 
     if request.method == 'POST':
         form = QualificationsForm(request.POST)
@@ -63,6 +63,13 @@ def add_qualifications(request, id):
         form = QualificationsForm()
 
     return render_to_response('qualifications.html', { 'form': form, 'target_url': request.get_full_path() })
+
+def profile(request, id):
+    id = verify_id_offset(id)
+    candidate = Candidate.objects.get(id = id)
+    qualifications = EducationQualifications.objects.get(candidate = candidate)
+    work_experience = WorkExperience.objects.get(candidate = candidate)
+    return render_to_response('profile.html', { 'candidate': candidate, 'work_experience': work_experience, 'qualifications': qualifications })
 
 
 def create_model(cleaned_data):
@@ -93,8 +100,10 @@ def create_qualifications_model(cleaned_data, id):
         institute_name = cleaned_data.get('institute_name')
         ).save()
 
-def verifies_id_offset(id):
+def verify_id_offset(id):
     try:
-        return int(id)
-    except ValueError:
+        id = int(id)
+        Candidate.objects.filter(id = id)
+        return id
+    except:
         raise Http404()

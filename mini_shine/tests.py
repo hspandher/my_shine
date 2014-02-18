@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
-from mini_shine.views import home, register, add_work_experience, add_qualifications
+from mini_shine.views import home, register, add_work_experience, add_qualifications, profile
 from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
 from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 
@@ -403,3 +403,54 @@ class QualificationsPageTest(PageTestMethodsMixin, TestCase):
         self.assertTrue(EducationQualifications.objects.get(education_specialization = self.form_details['education_specialization']))
         self.assertTrue(EducationQualifications.objects.get(institute_name = self.form_details['institute_name']))
 
+class ProfilePageTest(PageTestMethodsMixin, TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
+        self.candidate.save()
+
+        self.url = "/candidate/{id}/profile/".format(id = self.candidate.id)
+
+        self.work_experience = WorkExperience(
+            candidate = self.candidate,
+            is_experienced = True,
+            years_of_experience = 3,
+            months_of_experience = 10)
+
+        self.work_experience.save()
+
+        self.education_qualifications = EducationQualifications(
+            candidate = self.candidate,
+            highest_qualification = '10+2',
+            education_specialization = 'Non-Medical',
+            institute_name = 'CBSE')
+
+        self.education_qualifications.save()
+
+        self.response = profile(HttpRequest(), self.candidate.id)
+
+
+    def test_profile_url_resolves_to_right_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func, profile)
+
+    def test_profile_view_returns_http_response(self):
+        self.assertIsInstance(self.response, HttpResponse)
+
+    def test_profile_view_uses_right_template(self):
+        expected_response = render_to_response('profile.html', { 'candidate': self.candidate, 'work_experience': self.work_experience, 'qualifications': self.education_qualifications})
+        self.assertEqual(expected_response.content, self.response.content)
+
+    def test_profile_view_has_right_title(self):
+        self.assertIn('<title>Profile</title>', self.response.content)
+
+    def test_profile_view_has_right_header(self):
+        self.assertIn("<h1>{first_name} {last_name}</h1>".format(first_name = self.candidate.first_name, last_name = self.candidate.last_name), self.response.content)
