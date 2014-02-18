@@ -119,8 +119,6 @@ class NewVisitorTest(unittest.TestCase):
 
         self.fill_and_submit_form(details)
 
-        time.sleep(10)
-
 
         # She is redirected to a rather long form asking of lot of details.
         self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/add-work-experience\/$')
@@ -130,17 +128,34 @@ class NewVisitorTest(unittest.TestCase):
         # Are you:- Fresher, Experienced
         # Total Experience:- Select Years, Select Months
 
-        self.browser.find_element_by_css_selector('input[type="radio"][name="is_experienced"]')
+        # She considers her as having professional experience
 
-        self.browser.find_element_by_css_selector('input[type="select"][name="years_of_experience"]')
+        self.browser.find_element_by_css_selector('input[type="checkbox"][name="is_experienced"]').click()
 
-        self.browser.find_element_by_css_selector('input[type="select"][name="months_of_experience"]')
+        # She selects 10 years as years of experience
 
+        self.browser.find_element_by_xpath("//select[@name='years_of_experience']/option[@value='10']").click()
+
+        # She selects 3 months as months of experience
+
+        self.browser.find_element_by_xpath("//select[@name='months_of_experience']/option[@value='3']").click()
+
+        # She click the next button
+
+        self.browser.find_element_by_css_selector("input[type='submit'][value='Next']").click()
 
         # Educational Details :-
         # Highest Qualification:- Post-Graduate, Graduate, XII, X
         # She selects XII, she is asked to fill board/Institution, College/University,
         # and Marks/CGP of each of them.
+
+        self.browser.find_element_by_xpath("//select[@name='highest_qualification']/option[@value='10+2']").click()
+
+        self.browser.find_element_by_css_selector("input[type='text'][name='education_specialization']").send_keys('Non-Medical')
+
+        self.browser.find_element_by_name('institute_name').send_keys('CBSE')
+
+        self.browser.find_element_by_css_selector("input[type='submit'][value='Next']").click()
 
         # Resume
         # Upload resume :- Choose File

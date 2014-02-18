@@ -26,7 +26,11 @@ def register(request):
 
     return render_to_response('register.html', {'form': form})
 
-def add_work_experience(request):
+def add_work_experience(request, id):
+    try:
+        id = int(id)
+    except ValueError:
+        raise Http404()
     if request.method == 'POST':
         form = WorkExperienceForm(request.POST)
         if form.is_valid():

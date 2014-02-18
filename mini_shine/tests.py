@@ -249,8 +249,6 @@ class WorkExperienceModelTest(TestCase):
 class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
 
     def setUp(self):
-        self.response = add_work_experience(HttpRequest())
-
         self.candidate = Candidate(
             email = 'hspandher@outlook.com',
             first_name = 'Hakampreet Singh',
@@ -263,6 +261,7 @@ class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
 
         self.candidate.save()
         self.url = "/candidate/{id}/add-work-experience/".format(id = self.candidate.id)
+        self.response = add_work_experience(HttpRequest(), self.candidate.id)
         self.form_details = {
             'is_experienced': True,
             'years_of_experience': 4,
@@ -294,3 +293,5 @@ class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
     def test_work_view_redirects_after_successful_submission(self):
         response, _ = self.submit_post_form_to_view(self.url, self.form_details)
         self.assertEqual(response.status_code, 302)
+
+
