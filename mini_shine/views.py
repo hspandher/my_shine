@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
-from mini_shine.forms import RegistrationForm, WorkExperienceForm
+from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
 from mini_shine.models import Candidate
 from django.core.exceptions import ValidationError
 
@@ -62,7 +62,7 @@ def add_qualifications(request, id):
 
             return HttpResponseRedirect("/candidate/{id}/profile/".format(id = id))
     else:
-        form = WorkExperienceForm()
+        form = QualificationsForm()
 
     return render_to_response('qualifications.html', { 'form': form, 'target_url': request.get_full_path() })
 

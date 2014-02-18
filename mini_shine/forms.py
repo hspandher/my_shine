@@ -59,8 +59,8 @@ class QualificationsForm(forms.Form):
             ('10', '10th'),
             ('10+2', '10+2'),
             ('Graduation', 'Graduation'),
-            ('Post Graduation'),
-            ('Diploma/Vocational Courses')
+            ('Post Graduation', 'Post Graduation'),
+            ('Diploma/Vocational Courses', 'Diploma/Vocational Courses')
         ), widget = forms.Select(attrs = {'class': 'form-control'}))
 
     education_specialization = forms.CharField(widget = forms.TextInput(attrs = {'placeholder': 'Specialization' }), max_length = 40)

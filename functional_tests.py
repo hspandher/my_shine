@@ -149,13 +149,15 @@ class NewVisitorTest(unittest.TestCase):
         # She selects XII, she is asked to fill board/Institution, College/University,
         # and Marks/CGP of each of them.
 
+        time.sleep(30)
+
         self.browser.find_element_by_xpath("//select[@name='highest_qualification']/option[@value='10+2']").click()
 
         self.browser.find_element_by_css_selector("input[type='text'][name='education_specialization']").send_keys('Non-Medical')
 
         self.browser.find_element_by_name('institute_name').send_keys('CBSE')
 
-        self.browser.find_element_by_css_selector("input[type='submit'][value='Next']").click()
+        self.browser.find_element_by_css_selector("input[type='submit'][value='Submit']").click()
 
         # Resume
         # Upload resume :- Choose File

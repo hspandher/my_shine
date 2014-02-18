@@ -381,3 +381,8 @@ class QualificationsPageTest(TestCase):
 
     def test_qualifications_view_has_right_header(self):
         self.assertIn('<h1>Add Qualifications</h1>', self.response.content)
+
+    def test_register_view_has_correct_form_fields(self):
+        input_fields_names = ['highest_qualification', 'education_specialization', 'institute_name']
+        for field_name in input_fields_names:
+            self.assertIn(field_name, self.response.content)
