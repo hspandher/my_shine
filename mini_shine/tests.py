@@ -13,10 +13,13 @@ import pdb
 
 class PageTestMethodsMixin:
 
-    def submit_post_form_to_view(self, link, form_details):
+    def submit_post_form_to_view(self, link, form_details, view_name = register, id = None):
         factory = APIRequestFactory()
         request = factory.post(link, form_details)
-        return register(request), RegistrationForm(request.POST)
+        if id == None:
+            return view_name(request), RegistrationForm(request.POST)
+        else:
+            return view_name(request, id), RegistrationForm(request.POST)
 
 class ModelTestMethodsMixin:
 
@@ -291,7 +294,7 @@ class WorkExperiencePageTest(PageTestMethodsMixin, TestCase):
             self.assertIn(field_name, self.response.content)
 
     def test_work_view_redirects_after_successful_submission(self):
-        response, _ = self.submit_post_form_to_view(self.url, self.form_details)
+        response, form = self.submit_post_form_to_view(self.url, self.form_details, add_work_experience, self.candidate.id)
         self.assertEqual(response.status_code, 302)
 
 

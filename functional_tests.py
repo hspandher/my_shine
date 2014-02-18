@@ -149,7 +149,7 @@ class NewVisitorTest(unittest.TestCase):
         # She selects XII, she is asked to fill board/Institution, College/University,
         # and Marks/CGP of each of them.
 
-        time.sleep(30)
+        # Finally, She clicks the submit button
 
         self.browser.find_element_by_xpath("//select[@name='highest_qualification']/option[@value='10+2']").click()
 
@@ -159,12 +159,11 @@ class NewVisitorTest(unittest.TestCase):
 
         self.browser.find_element_by_css_selector("input[type='submit'][value='Submit']").click()
 
-        # Resume
-        # Upload resume :- Choose File
-
-        # Finally, In the end there is a submit button
         # She is redirected to her profile, with all her details and
         # credentials
+        self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/profile\/$')
+
+        # Profile page has all her credentials
 
         # She is satisfied and quit the browser
 
