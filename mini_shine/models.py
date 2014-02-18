@@ -38,6 +38,12 @@ def validate_months(value):
     if value != int(value) or value > 12 or value < 0:
         raise ValidationError('Invalid value for months')
 
+def validate_highest_qualifications(value):
+    if value == '10' or value == '10+2' or value == 'Graduation' or value == 'Post Graduation' or value == 'Diploma/Vocational Courses':
+        pass
+    else:
+        raise ValidationError('Invalid Highest Qualification')
+
 class Candidate(ValidateOnSaveMixin, models.Model):
 
     email = models.EmailField(validators = [validate_email, validate_email_uniqueness], unique = True)
@@ -56,3 +62,10 @@ class WorkExperience(ValidateOnSaveMixin, models.Model):
     years_of_experience = models.SmallIntegerField(validators = [validate_years])
     months_of_experience = models.SmallIntegerField(validators = [validate_months])
 
+
+class EducationQualifications(ValidateOnSaveMixin, models.Model):
+
+    candidate = models.ForeignKey(Candidate)
+    highest_qualification = models.CharField(max_length = 40, validators = [validate_highest_qualifications ])
+    education_specialization = models.CharField(max_length = 40)
+    institute_name = models.CharField(max_length = 50)

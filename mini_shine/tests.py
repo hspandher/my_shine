@@ -6,17 +6,19 @@ from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
 from mini_shine.views import home, register, add_work_experience
 from mini_shine.forms import RegistrationForm, WorkExperienceForm
-from mini_shine.models import Candidate, WorkExperience
+from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 
 
 import pdb
 
-class CommonTestMethodMixin(TestCase):
+class PageTestMethodsMixin:
 
     def submit_post_form_to_view(self, link, form_details):
         factory = APIRequestFactory()
         request = factory.post(link, form_details)
         return register(request), RegistrationForm(request.POST)
+
+class ModelTestMethodsMixin:
 
     def is_valid(self, object_name):
         try:
@@ -25,6 +27,13 @@ class CommonTestMethodMixin(TestCase):
             return False
         else:
             return True
+
+    def verify_all_validations(self, object_name, attribute_name, invalid_attributes):
+        for invalid_attribute in invalid_attributes:
+            target_object = getattr(self, object_name)
+            setattr(target_object, attribute_name, invalid_attribute)
+            if self.is_valid(object_name):
+                self.fail("{attr_value} should not be a valid {attribute_name}, but it passes".format(attr_value = invalid_attribute, attribute_name = attribute_name))
 
 
 class HomePageTest(TestCase):
@@ -56,7 +65,7 @@ class HomePageTest(TestCase):
         self.assertRegexpMatches(self.response.content, r'<a(.|\n)*?\/register\/(.|\n)*?>(.|\n)*?Register Now!(.|\n)*?<\/a>', 'Register Now link doesn\'t have right url')
 
 
-class RegisterPageTest(CommonTestMethodMixin, TestCase):
+class RegisterPageTest(PageTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.response = register(HttpRequest())
@@ -142,7 +151,7 @@ class RegisterPageTest(CommonTestMethodMixin, TestCase):
         self.assertTrue(Candidate.objects.filter(email = self.form_details['email']))
 
 
-class CandidateModelTest(CommonTestMethodMixin, TestCase):
+class CandidateModelTest(ModelTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -158,12 +167,8 @@ class CandidateModelTest(CommonTestMethodMixin, TestCase):
     def is_candidate_valid(self):
         return self.is_valid('candidate')
 
-
     def has_appropriate_validation(self, attribute_name, invalid_attributes = ['', 'aa', 'j'*51]):
-        for invalid_attribute in invalid_attributes:
-            setattr(self.candidate, attribute_name, invalid_attribute)
-            if self.is_candidate_valid():
-                self.fail("{attr_value} should not be a valid {attribute_name}, but it passes".format(attr_value = invalid_attribute, attribute_name = attribute_name))
+        self.verify_all_validations('candidate', attribute_name, invalid_attributes)
 
     def test_candidate_rejects_invalid_email(self):
         invalid_emails = ['lsflsdjf', 'ksjfls@slfls', 'lsjfldsfj.com']
@@ -197,7 +202,7 @@ class CandidateModelTest(CommonTestMethodMixin, TestCase):
         self.assertFalse(self.is_candidate_valid())
 
 
-class WorkExperienceModelTest(CommonTestMethodMixin, TestCase):
+class WorkExperienceModelTest(ModelTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -222,12 +227,9 @@ class WorkExperienceModelTest(CommonTestMethodMixin, TestCase):
         return self.is_valid('work_experience')
 
     def has_appropriate_validation(self, attribute_name, invalid_attributes):
-        for invalid_attribute in invalid_attributes:
-            setattr(self.work_experience, attribute_name, invalid_attribute)
-            if self.is_work_experience_valid():
-                self.fail("{attr_value} should not be a valid {attribute_name}, but it passes".format(attr_value = invalid_attribute, attribute_name = attribute_name))
+        self.verify_all_validations('work_experience', attribute_name, invalid_attributes)
 
-    def test_work_experience_must_have_valid_candidate(self):
+    def test_work_experience_belongs_to_valid_candidate(self):
         Candidate.objects.get(email = self.work_experience.candidate.email).delete()
         self.assertFalse(self.is_work_experience_valid(), 'Work Experience Candidate does not exist in the database')
 
@@ -244,7 +246,7 @@ class WorkExperienceModelTest(CommonTestMethodMixin, TestCase):
         self.has_appropriate_validation('is_experienced', invalid_is_experienced_values)
 
 
-class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
+class WorkExperiencePageTest(PageTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -293,7 +295,7 @@ class WorkExperiencePageTest(CommonTestMethodMixin, TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class EducationQualificationsModelTest(CommonTestMethodMixin, TestCase):
+class EducationQualificationsModelTest(ModelTestMethodsMixin, TestCase):
 
     def setUp(self):
         self.candidate = Candidate(
@@ -317,9 +319,21 @@ class EducationQualificationsModelTest(CommonTestMethodMixin, TestCase):
         self.work_experience.save()
 
         self.education_qualifications = EducationQualifications(
+            candidate = self.candidate,
             highest_qualification = '10+2',
             education_specialization = 'Non-Medical',
             institute_name = 'CBSE')
 
-    def are_qualifications_valid(qualifications):
-        return is_valid('qualifications')
+    def are_qualifications_valid(self):
+        return self.is_valid('qualifications')
+
+    def has_appropriate_validation(self, attribute_name, invalid_attributes):
+        self.verify_all_validations('education_qualifications', attribute_name, invalid_attributes)
+
+    def test_qualifications_belong_to_valid_candidate(self):
+        Candidate.objects.get(email = self.candidate.email).delete()
+        self.assertFalse(self.are_qualifications_valid(), 'Candidate with created qualifications does not exists in the database')
+
+    def test_qualifications_rejects_invalid_highest_qualification(self):
+        invalid_highest_qualifications = ['ldfjdslf', 'sdjfdls', '10+2ldsjfl']
+        self.has_appropriate_validation('highest_qualification', invalid_highest_qualifications)
