@@ -97,3 +97,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Backend to use Candidate Model for authentication
+
+AUTHENTICATION_BACKENDS = ('mini_shine.custom_backend.CandidateBackend',)
