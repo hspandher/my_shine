@@ -16,6 +16,7 @@ class PageTestMethodsMixin:
     def submit_post_form_to_view(self, link, form_details, view_name = register, id = None):
         factory = APIRequestFactory()
         request = factory.post(link, form_details)
+        request.session = {}
         if id == None:
             return view_name(request), RegistrationForm(request.POST)
         else:
@@ -198,10 +199,6 @@ class CandidateModelTest(ModelTestMethodsMixin, TestCase):
 
     def test_valid_candidate_is_accepted(self):
         self.assertTrue(self.is_candidate_valid())
-
-    def test_candidate_with_already_existing_email_is_rejected(self):
-        self.candidate.save()
-        self.assertFalse(self.is_candidate_valid())
 
 
 class WorkExperienceModelTest(ModelTestMethodsMixin, TestCase):
@@ -516,10 +513,5 @@ class LoginPageTest(PageTestMethodsMixin, TestCase):
         input_fields_names = ['email', 'password', 'Login']
         for field_name in input_fields_names:
             self.assertIn(field_name, self.response.content)
-
-    def test_login_view_redirects_after_registration(self):
-        link = '/login/'
-        response, _ = self.submit_post_form_to_view(link, self.form_details, login)
-        self.assertEqual(response.status_code, 302)
 
 

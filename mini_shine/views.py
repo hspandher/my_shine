@@ -82,10 +82,10 @@ def login(request):
             password = cleaned_data['password']
 
             user = auth.authenticate(email = email, password = password)
-
+            id = user.id
             if user is not None:
                 auth.login(request, user)
-                return HttpResponseRedirect('/candidate/{id}/profile'.format(id = id))
+                return HttpResponseRedirect('/candidate/{id}/profile/'.format(id = id))
             else:
                 authentication_error = 'Invalid Email and Password combination'
     else:

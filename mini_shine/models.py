@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+import datetime
 import re
 # Create your models here.
 
@@ -47,7 +48,7 @@ def validate_highest_qualifications(value):
 
 class Candidate(ValidateOnSaveMixin, models.Model):
 
-    email = models.EmailField(validators = [validate_email, validate_email_uniqueness], unique = True)
+    email = models.EmailField(validators = [validate_email], unique = True)
     first_name = models.CharField(validators = [validate_length], max_length = 40)
     last_name = models.CharField(validators = [validate_length], max_length = 40)
     city = models.CharField(validators = [validate_length], max_length = 40)
@@ -55,6 +56,9 @@ class Candidate(ValidateOnSaveMixin, models.Model):
     gender = models.CharField(validators = [validate_gender], max_length = 1)
     password = models.CharField(validators = [validate_length], max_length = 40)
     mobile_number = models.CharField(validators = [validate_mobile_number], max_length = 15)
+
+    # Added due to stupid bug with custom models in django
+    last_login = models.DateTimeField(default=datetime.datetime.now)
 
 class WorkExperience(ValidateOnSaveMixin, models.Model):
 
