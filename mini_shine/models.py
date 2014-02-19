@@ -6,6 +6,7 @@ import re
 
 class ValidateOnSaveMixin(object):
 
+    # pass
     def save(self, force_insert=False, force_update=False, **kwargs):
         if not (force_insert or force_update):
             self.full_clean()

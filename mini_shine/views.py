@@ -1,8 +1,9 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
-from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
+from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm, LoginForm
 from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 from django.core.exceptions import ValidationError
+from django.contrib import auth
 
 # Create your views here.
 
@@ -71,6 +72,26 @@ def profile(request, id):
     work_experience = WorkExperience.objects.get(candidate = candidate)
     return render_to_response('profile.html', { 'candidate': candidate, 'work_experience': work_experience, 'qualifications': qualifications })
 
+def login(request):
+    authentication_error = None
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            email = cleaned_data['email']
+            password = cleaned_data['password']
+
+            user = auth.authenticate(email = email, password = password)
+
+            if user is not None:
+                auth.login(request, user)
+                return HttpResponseRedirect('/candidate/{id}/profile'.format(id = id))
+            else:
+                authentication_error = 'Invalid Email and Password combination'
+    else:
+        form = LoginForm()
+
+    return render_to_response('login.html', { 'form': form, 'authentication_error': authentication_error })
 
 def create_model(cleaned_data):
     Candidate(

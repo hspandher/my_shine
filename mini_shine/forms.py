@@ -77,3 +77,9 @@ class QualificationsForm(forms.Form):
 
         return self.cleaned_data['highest_qualification']
 
+
+class LoginForm(forms.Form):
+
+    email = forms.EmailField(max_length = 40, widget = forms.TextInput(attrs = {'placeholder': 'Email' }))
+
+    password = forms.CharField(widget = forms.PasswordInput(attrs = {'placeholder': 'Password' }), max_length = 20)

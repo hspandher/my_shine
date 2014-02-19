@@ -4,8 +4,8 @@ from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 from rest_framework.test import APIRequestFactory
-from mini_shine.views import home, register, add_work_experience, add_qualifications, profile
-from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm
+from mini_shine.views import home, register, add_work_experience, add_qualifications, profile, login
+from mini_shine.forms import RegistrationForm, WorkExperienceForm, QualificationsForm, LoginForm
 from mini_shine.models import Candidate, WorkExperience, EducationQualifications
 
 
@@ -454,3 +454,72 @@ class ProfilePageTest(PageTestMethodsMixin, TestCase):
 
     def test_profile_view_has_right_header(self):
         self.assertIn("<h1>{first_name} {last_name}</h1>".format(first_name = self.candidate.first_name, last_name = self.candidate.last_name), self.response.content)
+
+
+class LoginPageTest(PageTestMethodsMixin, TestCase):
+
+    def setUp(self):
+        self.candidate = Candidate(
+            email = 'hspandher@outlook.com',
+            first_name = 'Hakampreet Singh',
+            last_name = 'Pandher',
+            country = 'India',
+            city = 'Ludhiana',
+            gender = 'M',
+            password = 'punit1988',
+            mobile_number = '9738472222')
+
+        self.candidate.save()
+
+        self.work_experience = WorkExperience(
+            candidate = self.candidate,
+            is_experienced = True,
+            years_of_experience = 3,
+            months_of_experience = 10)
+
+        self.work_experience.save()
+
+        self.education_qualifications = EducationQualifications(
+            candidate = self.candidate,
+            highest_qualification = '10+2',
+            education_specialization = 'Non-Medical',
+            institute_name = 'CBSE')
+
+        self.education_qualifications.save()
+        self.url = '/login/'
+        self.response = login(HttpRequest())
+
+        self.form_details = {
+            'email': 'hspandher@outlook.com',
+            'password': 'punit1988'
+        }
+
+
+    def test_login_url_resolves_to_right_view(self):
+        found = resolve(self.url)
+        self.assertEqual(found.func, login)
+
+    def test_login_view_returns_http_response(self):
+        self.assertIsInstance(self.response, HttpResponse)
+
+    def test_login_view_uses_right_template(self):
+        expected_response = render_to_response('login.html', { 'form': LoginForm(), 'authentication_error': None })
+        self.assertEqual(expected_response.content, self.response.content)
+
+    def test_login_view_has_right_title(self):
+        self.assertIn('<title>Login</title>', self.response.content)
+
+    def test_login_view_has_right_header(self):
+        self.assertIn('<h1>Login</h1>', self.response.content)
+
+    def test_login_view_has_correct_form_fields(self):
+        input_fields_names = ['email', 'password', 'Login']
+        for field_name in input_fields_names:
+            self.assertIn(field_name, self.response.content)
+
+    def test_login_view_redirects_after_registration(self):
+        link = '/login/'
+        response, _ = self.submit_post_form_to_view(link, self.form_details, login)
+        self.assertEqual(response.status_code, 302)
+
+

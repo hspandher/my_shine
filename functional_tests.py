@@ -162,12 +162,31 @@ class NewVisitorTest(unittest.TestCase):
         # She is redirected to her profile, with all her details and
         # credentials
 
-        time.sleep(300)
         self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/profile\/$')
 
         # Profile page has all her credentials
 
         # She is satisfied and quit the browser
+
+        self.login_to_profile()
+
+    def login_to_profile(self):
+        # she visits the login page
+        self.browser.get('http://localhost:8000/login')
+
+        # she fills the email field as 'edith432@gmail.com'
+        self.browser.find_element_by_css_selector("#base-form input[name='email']").send_keys('edith432@gmail.com')
+
+        # She fills the password field
+        self.browser.find_element_by_css_selector("#base-form input[name='password']").send_keys('edith3099')
+
+        # She presses the login button
+        self.browser.find_element_by_css_selector("#base-form input[type='submit'][value='Login']").click()
+
+        time.sleep(20)
+
+        # She is redirected to her profile page
+        self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/profile\/$')
 
 
 
