@@ -119,6 +119,8 @@ class NewVisitorTest(unittest.TestCase):
 
         self.fill_and_submit_form(details)
 
+        time.sleep(5)
+
 
         # She is redirected to a rather long form asking of lot of details.
         self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/add-work-experience\/$')
@@ -150,6 +152,8 @@ class NewVisitorTest(unittest.TestCase):
         # and Marks/CGP of each of them.
 
         # Finally, She clicks the submit button
+
+        time.sleep(5)
 
         self.browser.find_element_by_xpath("//select[@name='highest_qualification']/option[@value='10+2']").click()
 
