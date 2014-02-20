@@ -164,6 +164,8 @@ class NewVisitorTest(unittest.TestCase):
 
         self.assertRegexpMatches(self.browser.current_url ,r'candidate\/\d{1,10}\/profile\/$')
 
+        time.sleep(10)
+
         # Profile page has all her credentials
 
         # She is satisfied and quit the browser
